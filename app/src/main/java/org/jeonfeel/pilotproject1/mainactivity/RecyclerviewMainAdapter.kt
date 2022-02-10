@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1
+package org.jeonfeel.pilotproject1.mainactivity
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,19 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.JsonObject
+import org.jeonfeel.pilotproject1.R
 
 class RecyclerviewMainAdapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>() {
 
-    var recyclerViewMainItem = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemColdBrew = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemBrood = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemEspresso = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemFrappuccino = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemBlended = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemFizzo = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemJuice = ArrayList<StarbucksMenuDTO>()
-    var recyclerViewMainItemEtc = ArrayList<StarbucksMenuDTO>()
+    lateinit var starbucksMenuJsonObject: JsonObject
+    private lateinit var recyclerViewMainItem: ArrayList<StarbucksMenuDTO>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -44,6 +39,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             itemView.findViewById(R.id.imageview_recyclerview_main_item)
         //리사이클러뷰 아이템 바인딩
         fun itemBinding(starbucksMenuDTO: StarbucksMenuDTO) {
+            when()
             Glide.with(context).load(starbucksMenuDTO.file_PATH).into(imageview_recyclerview_main_item)
             textview_recyclerview_main_item_productName.text = starbucksMenuDTO.product_NM
             textview_recyclerview_main_item_kcal.text = "${starbucksMenuDTO.kcal} Kcal"

@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1
+package org.jeonfeel.pilotproject1.retrofit
 
 import android.content.Context
 import android.util.Log

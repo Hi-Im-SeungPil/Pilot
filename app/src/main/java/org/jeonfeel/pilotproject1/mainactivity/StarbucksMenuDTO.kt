@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1
+package org.jeonfeel.pilotproject1.mainactivity
 //메뉴 DTO
 data class StarbucksMenuDTO(
     val content: String,

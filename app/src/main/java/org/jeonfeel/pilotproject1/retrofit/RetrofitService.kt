@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1
+package org.jeonfeel.pilotproject1.retrofit
 
 import com.google.gson.JsonObject
 import org.json.JSONArray
