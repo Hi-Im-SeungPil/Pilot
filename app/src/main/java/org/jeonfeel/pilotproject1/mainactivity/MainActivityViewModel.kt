@@ -1,24 +1,23 @@
 package org.jeonfeel.pilotproject1.mainactivity
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.gson.JsonObject
-import org.jeonfeel.pilotproject1.retrofit.RetrofitClient
-import org.jeonfeel.pilotproject1.retrofit.RetrofitService
-import retrofit2.Call
-import kotlin.concurrent.thread
 
 //뷰 모델 추후 설계
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "MainActivityViewModel"
-    private val _recyclerViewMainItem = ArrayList<StarbucksMenuDTO>()
-    private val _recyclerViewMainLivedata: MutableLiveData<ArrayList<StarbucksMenuDTO>> by lazy {
-        MutableLiveData<ArrayList<StarbucksMenuDTO>>()
+    private val mainRepository = MainRepository()
+    private val _recyclerViewMainStarbucksMenu = mainRepository.getStarbucksMenuList()
+    private val _recyclerViewMainStarbucksResource = mainRepository.getStarbucksMenuResource()
+
+    fun getStarbucksMenuList() = _recyclerViewMainStarbucksMenu
+    fun getStarbucksMenuResource() = _recyclerViewMainStarbucksResource
+
+    fun updateStarbucksMenu(position: Int){
+        val recyclerViewMainStarbucksResource = mainRepository.getStarbucksMenuResource(position)
+        _recyclerViewMainStarbucksMenu.value?.clear()
+        _recyclerViewMainStarbucksMenu.value = recyclerViewMainStarbucksResource
     }
-    val recyclerViewMainLivedata : MutableLiveData<ArrayList<StarbucksMenuDTO>> = _recyclerViewMainLivedata
 
 //    fun insertListStarbucksMenu(jsonObjectStarbucksMenu: JsonObject) :ArrayList<StarbucksMenuDTO> {
 //        val gson = Gson()
