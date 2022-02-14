@@ -111,6 +111,10 @@ class MainActivity : AppCompatActivity() {
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
         binding.RecyclerviewMain.hasFixedSize()
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
+//        val spanCount = 2
+//        val spacing = 500 // 50px
+//        val includeEdge = false
+//        binding.RecyclerviewMain.addItemDecoration(Spacing(spanCount, spacing, includeEdge))
 //        val x = (resources.displayMetrics.density*4).toInt()
 //        binding.RecyclerviewMain.addItemDecoration(RecyclerviewMainItemDecoration(x))
     }

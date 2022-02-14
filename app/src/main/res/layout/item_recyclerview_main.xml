@@ -11,12 +11,14 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_recyclerview_main_item"
-        android:layout_width="140dp"
+        android:layout_width="match_parent"
         android:layout_height="243dp"
         android:orientation="horizontal"
         android:layout_marginBottom="17dp"
         android:clickable="true"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp">
 
         <LinearLayout
             android:id="@+id/a"
