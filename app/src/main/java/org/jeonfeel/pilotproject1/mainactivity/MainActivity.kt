@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -94,12 +95,21 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        binding.buttonAdjust.setOnClickListener {
+            val fragment = FragmentSettingMain()
+            fragment.setRecyclerViewMainAdapter(recyclerviewMainAdapter)
+                supportFragmentManager.beginTransaction().
+                replace(binding.framelayoutSettingMain.id,fragment).
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
+                commit()
+        }
     }
     //그리드 레이아웃 매니저 왼쪽으로 치우치는 현상 해결 해야함
     private fun initRecyclerViewMain() {
         val gridLayoutManager = GridLayoutManager(this,2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
+        binding.RecyclerviewMain.hasFixedSize()
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
 //        val x = (resources.displayMetrics.density*4).toInt()
 //        binding.RecyclerviewMain.addItemDecoration(RecyclerviewMainItemDecoration(x))
@@ -111,5 +121,9 @@ class MainActivity : AppCompatActivity() {
             recyclerviewMainAdapter.filter.filter(currentString)
         }
         binding.RecyclerviewMain.scrollToPosition(0)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }

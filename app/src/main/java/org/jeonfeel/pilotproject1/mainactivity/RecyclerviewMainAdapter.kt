@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.view.accessibility.AccessibilityViewCommand
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RecyclerviewMainAdapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
@@ -36,11 +39,29 @@ class RecyclerviewMainAdapter(private val context: Context) :
     }
 
     fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
-        val diffResult= DiffUtil.calculateDiff(StarbucksMenuDiffUtil(recyclerViewMainItem, newMenuDTO), false)
+        val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(recyclerViewMainItem, newMenuDTO), false)
         recyclerViewMainItem.clear()
         recyclerViewMainItem.addAll(newMenuDTO)
         diffResult.dispatchUpdatesTo(this)
         Log.d("Recyclerview",recyclerViewMainItem.size.toString())
+    }
+
+    fun updateSetting(sortInfo: Int) {
+        if (sortInfo != 0) {
+            val tempList: ArrayList<StarbucksMenuDTO> = arrayListOf()
+            tempList.addAll(filteredList)
+            when (sortInfo) {
+                -1 -> filteredList.sortBy{it.kcal.toInt()}
+                1 -> filteredList.sortByDescending{it.kcal.toInt()}
+            }
+            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(tempList, filteredList), false)
+            diffResult.dispatchUpdatesTo(this)
+        }else {
+            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(filteredList, recyclerViewMainItem), false)
+            filteredList.clear()
+            filteredList.addAll(recyclerViewMainItem)
+            diffResult.dispatchUpdatesTo(this)
+        }
     }
 
     override fun getFilter(): Filter {

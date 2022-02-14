@@ -18,18 +18,4 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         _recyclerViewMainStarbucksMenu.value?.clear()
         _recyclerViewMainStarbucksMenu.value = recyclerViewMainStarbucksResource
     }
-
-//    fun insertListStarbucksMenu(jsonObjectStarbucksMenu: JsonObject) :ArrayList<StarbucksMenuDTO> {
-//        val gson = Gson()
-//        val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-//        val jsonArrayStarbucksMenu = jsonObjectStarbucksMenu?.getAsJsonArray("list")
-//
-//        for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-//            Log.d(TAG,jsonArrayStarbucksMenu[i].toString())
-//            val sampleItem = gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
-//            starbucksMenuDTOs.add(sampleItem)
-//            recyclerViewMainItem.add(sampleItem)
-//        }
-//        return starbucksMenuDTOs
-//    }
 }

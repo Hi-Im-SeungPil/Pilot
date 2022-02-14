@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fragment_setting_main_filter_admit">필터 적용</string>
+    <string name="fragment_setting_main_filter_reset">초기화</string>
+    <string name="fragment_setting_main_filter_title">필터</string>
+    <string name="fragment_setting_main_radio_item1">저칼로리</string>
+    <string name="fragment_setting_main_radio_item2">기본 정렬</string>
+    <string name="fragment_setting_main_radio_item3">고칼로리</string>
+</resources>
