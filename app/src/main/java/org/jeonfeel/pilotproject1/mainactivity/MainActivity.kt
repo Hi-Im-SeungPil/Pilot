@@ -45,67 +45,35 @@ class MainActivity : AppCompatActivity() {
                 when (tab?.position) {
                     0 -> {
                         mainActivityViewModel.updateStarbucksMenu(7)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     1 -> {
                         mainActivityViewModel.updateStarbucksMenu(0)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     2 -> {
                         mainActivityViewModel.updateStarbucksMenu(1)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     3 -> {
                         mainActivityViewModel.updateStarbucksMenu(2)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     4 -> {
                         mainActivityViewModel.updateStarbucksMenu(3)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     5 -> {
                         mainActivityViewModel.updateStarbucksMenu(4)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     6 -> {
                         mainActivityViewModel.updateStarbucksMenu(5)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                     7 -> {
                         mainActivityViewModel.updateStarbucksMenu(6)
-                        if(binding.edittextSearchMain.length() != 0){
-                            val currentString = binding.edittextSearchMain.text.toString()
-                            recyclerviewMainAdapter.filter.filter(currentString)
-                        }
-                        binding.RecyclerviewMain.scrollToPosition(0)
+                        setTabLayout()
                     }
                 }
             }
@@ -127,11 +95,21 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
-
+    //그리드 레이아웃 매니저 왼쪽으로 치우치는 현상 해결 해야함
     private fun initRecyclerViewMain() {
         val gridLayoutManager = GridLayoutManager(this,2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
+//        val x = (resources.displayMetrics.density*4).toInt()
+//        binding.RecyclerviewMain.addItemDecoration(RecyclerviewMainItemDecoration(x))
+    }
+
+    private fun setTabLayout() {
+        if(binding.edittextSearchMain.length() != 0){
+            val currentString = binding.edittextSearchMain.text.toString()
+            recyclerviewMainAdapter.filter.filter(currentString)
+        }
+        binding.RecyclerviewMain.scrollToPosition(0)
     }
 }

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="31dp"
         android:textSize="27sp"
-        android:text="Products"
+        android:text="@string/activity_main_title"
         android:textColor="#000000"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="18dp"
@@ -30,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="53dp"
         android:textSize="17sp"
-        android:hint="Search..."
+        android:hint="@string/activity_main_edittext_hint"
         android:layout_marginLeft="23dp"
         android:layout_marginTop="18dp"
         android:paddingLeft="57dp"
@@ -66,35 +66,35 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ALL"/>
+            android:text="@string/activity_main_tablayout_item1"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="콜드브루"/>
+            android:text="@string/activity_main_tablayout_item2"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="브루드"/>
+            android:text="@string/activity_main_tablayout_item3"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="에스프레소"/>
+            android:text="@string/activity_main_tablayout_item4"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="프라푸치노"/>
+            android:text="@string/activity_main_tablayout_item5"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="블렌디드"/>
+            android:text="@string/activity_main_tablayout_item6"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="주스"/>
+            android:text="@string/activity_main_tablayout_item7"/>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="기타"/>
+            android:text="@string/activity_main_tablayout_item8"/>
     </com.google.android.material.tabs.TabLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecyclerviewMain"

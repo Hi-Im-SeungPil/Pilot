@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_main_title">Products</string>
+    <string name="activity_main_edittext_hint">Search…</string>
+    <string name="activity_main_tablayout_item1">All</string>
+    <string name="activity_main_tablayout_item2">콜드브루</string>
+    <string name="activity_main_tablayout_item3">브루드</string>
+    <string name="activity_main_tablayout_item4">에스프레소</string>
+    <string name="activity_main_tablayout_item5">프라푸치노</string>
+    <string name="activity_main_tablayout_item6">블렌디드</string>
+    <string name="activity_main_tablayout_item7">주스</string>
+    <string name="activity_main_tablayout_item8">기타</string>
+</resources>
