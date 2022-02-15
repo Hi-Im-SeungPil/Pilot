@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.mainactivity.recyclerview
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,17 +7,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import androidx.core.view.accessibility.AccessibilityViewCommand
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
-import java.util.*
+import org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO
 import kotlin.collections.ArrayList
 
 class RecyclerviewMainAdapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
-    private var filteredList = recyclerViewMainItem
+    private var filteredList: ArrayList<StarbucksMenuDTO> = recyclerViewMainItem
+    var tempListResult: ArrayList<StarbucksMenuDTO> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -48,18 +48,19 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
     fun updateSetting(sortInfo: Int) {
         if (sortInfo != 0) {
-            val tempList: ArrayList<StarbucksMenuDTO> = arrayListOf()
-            tempList.addAll(filteredList)
+            var tempList: List<StarbucksMenuDTO> = listOf()
+
             when (sortInfo) {
-                -1 -> filteredList.sortBy{it.kcal.toInt()}
-                1 -> filteredList.sortByDescending{it.kcal.toInt()}
+                -1 -> tempList = filteredList.sortedBy{it.kcal.toInt()}
+                1 -> tempList = filteredList.sortedByDescending{it.kcal.toInt()}
             }
-            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(tempList, filteredList), false)
+            tempListResult.addAll(tempList)
+
+            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(filteredList, tempListResult), false)
             diffResult.dispatchUpdatesTo(this)
-        }else {
-            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(filteredList, recyclerViewMainItem), false)
-            filteredList.clear()
-            filteredList.addAll(recyclerViewMainItem)
+        } else {
+            Log.d("RRRRRRR",recyclerViewMainItem.size.toString())
+            val diffResult = DiffUtil.calculateDiff(StarbucksMenuDiffUtil(tempListResult, filteredList), false)
             diffResult.dispatchUpdatesTo(this)
         }
     }

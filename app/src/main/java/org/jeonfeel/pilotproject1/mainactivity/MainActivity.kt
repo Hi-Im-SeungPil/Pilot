@@ -1,25 +1,24 @@
 package org.jeonfeel.pilotproject1.mainactivity
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Toast
+import android.view.MotionEvent
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.tabs.TabLayout
-import com.google.gson.JsonObject
+import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
-import org.jeonfeel.pilotproject1.retrofit.RetrofitClient
-import org.jeonfeel.pilotproject1.retrofit.RetrofitService
-import retrofit2.Call
-import java.util.*
-import kotlin.concurrent.thread
+import org.jeonfeel.pilotproject1.mainactivity.recyclerview.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.mainactivity.recyclerview.RecyclerviewMainAdapter
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
@@ -27,13 +26,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-        supportActionBar?.hide()
 
         initRecyclerViewMain()
+        binding.framelayoutSettingMain.visibility = View.GONE
         mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         Log.d(TAG,mainActivityViewModel.getStarbucksMenuList().value.toString())
 
@@ -43,43 +43,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> {
-                        mainActivityViewModel.updateStarbucksMenu(7)
-                        setTabLayout()
-                    }
-                    1 -> {
-                        mainActivityViewModel.updateStarbucksMenu(0)
-                        setTabLayout()
-                    }
-                    2 -> {
-                        mainActivityViewModel.updateStarbucksMenu(1)
-                        setTabLayout()
-                    }
-                    3 -> {
-                        mainActivityViewModel.updateStarbucksMenu(2)
-                        setTabLayout()
-                    }
-                    4 -> {
-                        mainActivityViewModel.updateStarbucksMenu(3)
-                        setTabLayout()
-                    }
-                    5 -> {
-                        mainActivityViewModel.updateStarbucksMenu(4)
-                        setTabLayout()
-                    }
-                    6 -> {
-                        mainActivityViewModel.updateStarbucksMenu(5)
-                        setTabLayout()
-                    }
-                    7 -> {
-                        mainActivityViewModel.updateStarbucksMenu(6)
-                        setTabLayout()
-                    }
+                if (tab?.position == 0){
+                    mainActivityViewModel.updateStarbucksMenu(7)
+                } else {
+                    mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
                 }
+                filteringRecyclerviewItem()
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {
             }
+
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
         })
@@ -93,37 +67,47 @@ class MainActivity : AppCompatActivity() {
 
             override fun afterTextChanged(str: Editable?) {
             }
-
         })
         binding.buttonAdjust.setOnClickListener {
-            val fragment = FragmentSettingMain()
+            val animation = AnimationUtils.loadAnimation(this, R.anim.fragment_setting_main_slide_up)
+            binding.framelayoutSettingMain.animation = animation
+            binding.framelayoutSettingMain.visibility = View.VISIBLE
+
+            val fragment = FragmentSettingMain.newInstance()
             fragment.setRecyclerViewMainAdapter(recyclerviewMainAdapter)
-                supportFragmentManager.beginTransaction().
-                replace(binding.framelayoutSettingMain.id,fragment).
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
-                commit()
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.framelayoutSettingMain.id,fragment)
+                    .commit()
         }
-    }
-    //그리드 레이아웃 매니저 왼쪽으로 치우치는 현상 해결 해야함
-    private fun initRecyclerViewMain() {
-        val gridLayoutManager = GridLayoutManager(this,2)
-        binding.RecyclerviewMain.layoutManager = gridLayoutManager
-        recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
-        binding.RecyclerviewMain.hasFixedSize()
-        binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
-//        val spanCount = 2
-//        val spacing = 500 // 50px
-//        val includeEdge = false
-//        binding.RecyclerviewMain.addItemDecoration(Spacing(spanCount, spacing, includeEdge))
-//        val x = (resources.displayMetrics.density*4).toInt()
-//        binding.RecyclerviewMain.addItemDecoration(RecyclerviewMainItemDecoration(x))
+
+        binding.framelayoutSettingMain.setOnTouchListener(object : View.OnTouchListener{
+            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+                return true
+            }
+        })
     }
 
-    private fun setTabLayout() {
+    private fun initRecyclerViewMain() {
+        val gridLayoutManager = GridLayoutManagerWrap(this,2)
+        binding.RecyclerviewMain.layoutManager = gridLayoutManager
+        recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
+        binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
+    }
+
+    private fun filteringRecyclerviewItem() {
         if(binding.edittextSearchMain.length() != 0){
             val currentString = binding.edittextSearchMain.text.toString()
             recyclerviewMainAdapter.filter.filter(currentString)
+            binding.RecyclerviewMain.scrollToPosition(0)
         }
+    }
+
+    fun frameLayoutGone() {
+        binding.framelayoutSettingMain.visibility = View.GONE
+    }
+
+    fun moveRecyclerviewFirst() {
         binding.RecyclerviewMain.scrollToPosition(0)
     }
 

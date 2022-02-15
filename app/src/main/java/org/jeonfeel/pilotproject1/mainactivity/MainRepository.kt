@@ -13,15 +13,15 @@ class MainRepository {
     private val retrofit = RetrofitClient().getRetrofitClient()
     private val service = retrofit.create(RetrofitService::class.java)
     private val call: Call<JsonObject> = service.getStarbucksMenu()
-    private var jsonObject: JsonObject? = null
+    private var starbucksMenuJsonObject: JsonObject? = null
 
     fun getStarbucksMenuList() : MutableLiveData<ArrayList<StarbucksMenuDTO>> {
         var starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-        if (jsonObject == null) {
+        if (starbucksMenuJsonObject == null) {
             val thread = Thread {
                 try {
-                    jsonObject = call.execute().body()!!
-                    Log.d(TAG, jsonObject.toString())
+                    starbucksMenuJsonObject = call.execute().body()!!
+                    Log.d(TAG, starbucksMenuJsonObject.toString())
                     starbucksMenuDTOs = getStarbucksMenuResource()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -43,7 +43,7 @@ class MainRepository {
         val category = arrayOf("cold_brew","brood","espresso","frappuccino","blended","juice","etc")
         if (categoryPosition == 7) {
             for (element in category) {
-                val categoryJsonObject = jsonObject?.getAsJsonObject(element)
+                val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
                 val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
                 for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
@@ -53,7 +53,7 @@ class MainRepository {
                 }
             }
         }else {
-            val categoryJsonObject = jsonObject?.getAsJsonObject(category[categoryPosition])
+            val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(category[categoryPosition])
             val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
             for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {

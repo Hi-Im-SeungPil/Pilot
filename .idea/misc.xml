@@ -18,7 +18,7 @@
         <entry key="app/src/main/res/drawable/fragment_setting_main_cornet.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/item_recyclerview_main_cardview.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/main_edittext.xml" value="0.245" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.125" />
         <entry key="app/src/main/res/layout/fragment_setting_main.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/layout/fragment_setting_main2.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/layout/item_recyclerview_main.xml" value="0.19322916666666667" />

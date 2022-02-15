@@ -68,7 +68,7 @@
                     android:layout_width="64.02dp"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:text="@{item_recyclerview_main.kcal}"
+                    android:text="@{@string/recyclerview_main_item_kcal(item_recyclerview_main.kcal)}"
                     android:layout_marginLeft="11dp" />
             </LinearLayout>
         </LinearLayout>
