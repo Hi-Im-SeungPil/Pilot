@@ -43,6 +43,7 @@ class FragmentSettingMain : Fragment() {
         }
 
         binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener{ radioGroup: RadioGroup, i: Int ->
+            sortInfo = 0
             when (radioGroup.checkedRadioButtonId) {
                 binding?.radiogroupFragmentSettingMainRowkcal?.id -> sortInfo = -1
                 binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo = 1

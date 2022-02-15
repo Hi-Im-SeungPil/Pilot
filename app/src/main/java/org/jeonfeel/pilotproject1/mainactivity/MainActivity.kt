@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initRecyclerViewMain()
-        binding.framelayoutSettingMain.visibility = View.GONE
         mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         Log.d(TAG,mainActivityViewModel.getStarbucksMenuList().value.toString())
 
@@ -57,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
         })
+
         binding.edittextSearchMain.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(str: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(str: Editable?) {
             }
         })
+
         binding.buttonAdjust.setOnClickListener {
             val animation = AnimationUtils.loadAnimation(this, R.anim.fragment_setting_main_slide_up)
             binding.framelayoutSettingMain.animation = animation
@@ -99,8 +100,8 @@ class MainActivity : AppCompatActivity() {
         if(binding.edittextSearchMain.length() != 0){
             val currentString = binding.edittextSearchMain.text.toString()
             recyclerviewMainAdapter.filter.filter(currentString)
-            binding.RecyclerviewMain.scrollToPosition(0)
         }
+        binding.RecyclerviewMain.scrollToPosition(0)
     }
 
     fun frameLayoutGone() {
@@ -109,6 +110,16 @@ class MainActivity : AppCompatActivity() {
 
     fun moveRecyclerviewFirst() {
         binding.RecyclerviewMain.scrollToPosition(0)
+    }
+
+    fun getFilterInRecyclerviewAdapter() : Boolean {
+        if (binding.edittextSearchMain.length() != 0){
+            val str = binding.edittextSearchMain.text.toString()
+            recyclerviewMainAdapter.filter.filter(str)
+
+            return true
+        }
+        return false
     }
 
     override fun onBackPressed() {
