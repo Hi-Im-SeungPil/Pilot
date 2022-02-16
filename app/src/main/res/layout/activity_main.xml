@@ -5,49 +5,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".mainactivity.MainActivity">
+
+<!--    <ImageView-->
+<!--        android:layout_width="207dp"-->
+<!--        android:layout_height="208dp"-->
+<!--        android:background="@drawable/img_circle_2x" />-->
+
+<!--    <ImageView-->
+<!--        android:layout_width="207dp"-->
+<!--        android:layout_height="208dp"-->
+<!--        android:background="@drawable/img_circle_2x"-->
+<!--        tools:ignore="MissingConstraints"-->
+<!--        tools:layout_editor_absoluteX="311dp"-->
+<!--        tools:layout_editor_absoluteY="400dp" />-->
+
     <TextView
         android:id="@+id/textview_product"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
-        android:textSize="27sp"
-        android:text="@string/activity_main_title"
-        android:textColor="#000000"
+        android:layout_marginLeft="23dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="18dp"
-        android:layout_marginLeft="23dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        android:text="@string/activity_main_title"
+        android:textColor="#000000"
+        android:textSize="27sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <FrameLayout
         android:id="@+id/framelayout_setting_main"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="18dp"
         android:elevation="10dp"
-        android:visibility="gone"/>
-    <ImageView
-        android:layout_width="17dp"
-        android:layout_height="17dp"
-        android:layout_marginLeft="20dp"
-        app:layout_constraintLeft_toLeftOf="@+id/edittext_search_main"
-        app:layout_constraintTop_toTopOf="@+id/edittext_search_main"
-        app:layout_constraintBottom_toBottomOf="@+id/edittext_search_main"
-        android:src="@drawable/img_search_2x"/>
+        android:visibility="gone"
+        android:background="@color/design_default_color_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_product" />
+
     <EditText
         android:id="@+id/edittext_search_main"
         android:layout_width="0dp"
         android:layout_height="53dp"
-        android:textSize="17sp"
-        android:hint="@string/activity_main_edittext_hint"
         android:layout_marginLeft="23dp"
         android:layout_marginTop="18dp"
+        android:background="@drawable/main_edittext"
+        android:hint="@string/activity_main_edittext_hint"
+        android:maxLines="1"
         android:paddingLeft="57dp"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product"
+        android:textSize="17sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/button_adjust"
-        android:background="@drawable/main_edittext"
-        android:maxLines="1"/>
+        app:layout_constraintTop_toBottomOf="@+id/textview_product" />
+
+    <ImageView
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/img_search_2x"
+        app:layout_constraintBottom_toBottomOf="@+id/edittext_search_main"
+        app:layout_constraintLeft_toLeftOf="@+id/edittext_search_main"
+        app:layout_constraintTop_toTopOf="@+id/edittext_search_main" />
+
     <Button
         android:id="@+id/button_adjust"
         android:layout_width="51dp"
@@ -55,63 +74,38 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="18dp"
         android:layout_marginRight="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product"
-        app:layout_constraintRight_toRightOf="parent"
+        android:background="@drawable/img_filter_2x"
         app:layout_constraintLeft_toRightOf="@+id/edittext_search_main"
-        android:background="@drawable/img_filter_2x"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_product" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout_main"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_marginLeft="11dp"
-        android:layout_marginRight="11dp"
         android:layout_marginTop="24dp"
+        android:layout_marginRight="11dp"
         app:layout_constraintTop_toBottomOf="@+id/edittext_search_main"
-        app:tabMode="scrollable"
+        app:tabBackground="@drawable/bg_tablayout_main"
         app:tabIndicatorHeight="0dp"
-        app:tabTextColor="#BCC7CA"
-        app:tabBackground="@drawable/main_tablayout_background"
-        app:tabSelectedTextColor="#FFFFFFFF">
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="#FFFFFFFF"
+        app:tabTextColor="#BCC7CA">
+
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item1"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item2"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item3"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item4"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item5"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item6"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item7"/>
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/activity_main_tablayout_item8"/>
+            android:text="@string/activity_main_tablayout_item1" />
     </com.google.android.material.tabs.TabLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecyclerviewMain"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginLeft="12dp"
         android:layout_marginTop="24dp"
+        android:layout_marginRight="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tablayout_main"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/tablayout_main" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@ package org.jeonfeel.pilotproject1.mainactivity.recyclerview
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -12,14 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.mainactivity.MainActivity
 import org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO
+import org.jeonfeel.pilotproject1.starbucks_detail_activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
 
 class RecyclerviewMainAdapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
+
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     private var filteredList = recyclerViewMainItem
     private var copyMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
-    private var tempMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,6 +33,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
         holder.setMarquee()
+        holder.setItemClickListener(filteredList[position])
     }
 
     override fun getItemCount(): Int = filteredList.size
@@ -41,30 +43,33 @@ class RecyclerviewMainAdapter(private val context: Context) :
     }
 
     fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
-        val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(recyclerViewMainItem, newMenuDTO), false)
+        val diffResult = DiffUtil.calculateDiff(
+            RecyclerviewMainDiffUtil(recyclerViewMainItem, newMenuDTO),
+            false
+        )
         recyclerViewMainItem.clear()
         recyclerViewMainItem.addAll(newMenuDTO)
         copyMainItem.clear()
         copyMainItem.addAll(newMenuDTO)
         diffResult.dispatchUpdatesTo(this)
-        Log.d("Recyclerview",recyclerViewMainItem.size.toString())
     }
 
-    fun updateSetting(sortInfo: Int) {
+    fun updateSetting(sortInfo: Int, caffeineCheck: Int) {
         if (sortInfo != 0) {
+            filteringCaffeine()
             when (sortInfo) {
-                -1 -> filteredList.sortBy{ it.kcal.toInt() }
-                1 -> filteredList.sortByDescending{ it.kcal.toInt() }
+                -1 -> filteredList.sortBy { it.kcal.toInt() }
+                1 -> filteredList.sortByDescending { it.kcal.toInt() }
             }
             notifyItemRangeChanged(0, filteredList.size)
         } else {
-            recyclerViewMainItem.clear()
-            recyclerViewMainItem.addAll(copyMainItem)
-            val editTextIsEmpty = (context as MainActivity?)!!.getFilterInRecyclerviewAdapter()
-            if (editTextIsEmpty) {
-                notifyItemRangeChanged(0, itemCount)
+            filteredList.clear()
+            filteredList.addAll(copyMainItem)
+            val currentText = (context as MainActivity).getCurrentText()
+            if (currentText.trim().isNotEmpty()) {
+                filter.filter(currentText)
             } else {
-                noti
+                notifyItemRangeChanged(0, itemCount)
             }
         }
     }
@@ -97,19 +102,38 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
+    fun filteringCaffeine() {
+        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
+        for (i in 0 until filteredList.size){
+            if (filteredList[i].caffeine.toInt() == 0) {
+                filteredCaffeineList.add(filteredList[i])
+            }
+        }
+        filteredList.clear()
+        filteredList.addAll(filteredCaffeineList)
+    }
+
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
         RecyclerView.ViewHolder(binding.root) {
         //리사이클러뷰 아이템 바인딩
         fun itemBinding(starbucksMenuDTO: StarbucksMenuDTO) {
-            with(binding){
+            with(binding) {
                 binding.itemRecyclerviewMain = starbucksMenuDTO
                 executePendingBindings()
             }
         }
 
-        fun setMarquee(){
+        fun setMarquee() {
             binding.textviewRecyclerviewMainItemProductName.setHorizontallyScrolling(true)
             binding.textviewRecyclerviewMainItemProductName.isSelected = true
+        }
+
+        fun setItemClickListener(starbucksMenuDTO: StarbucksMenuDTO) {
+            binding.cardviewRecyclerviewMainItem.setOnClickListener {
+                val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
+                intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
+                context.startActivity(intent)
+            }
         }
     }
 }

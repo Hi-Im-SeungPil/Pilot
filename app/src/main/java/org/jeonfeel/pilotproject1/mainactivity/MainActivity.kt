@@ -5,13 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
@@ -21,32 +18,49 @@ import org.jeonfeel.pilotproject1.mainactivity.recyclerview.GridLayoutManagerWra
 import org.jeonfeel.pilotproject1.mainactivity.recyclerview.RecyclerviewMainAdapter
 
 class MainActivity : AppCompatActivity() {
+
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        initRecyclerViewMain()
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        Log.d(TAG,mainActivityViewModel.getStarbucksMenuList().value.toString())
+        initActivity()
+    }
 
-        mainActivityViewModel.getStarbucksMenuList().observe(this, Observer {
+    /**
+     * 액티비티 초기화
+     */
+    private fun initActivity() {
+        initRecyclerViewMain()
+        initObserver()
+        initListener()
+        addTabLayoutCategory()
+    }
+
+    /**
+     * 옵저버
+     */
+    private fun initObserver() {
+        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+
+        mainActivityViewModel.getStarbucksMenuLiveData().observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
         })
+    }
 
-        binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+    /**
+     * 리스너
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initListener() {
+        binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab?.position == 0){
-                    mainActivityViewModel.updateStarbucksMenu(7)
-                } else {
-                    mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
-                }
+                mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
                 filteringRecyclerviewItem()
             }
 
@@ -57,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        binding.edittextSearchMain.addTextChangedListener(object: TextWatcher{
+        binding.edittextSearchMain.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(str: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -70,19 +84,20 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.buttonAdjust.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(this, R.anim.fragment_setting_main_slide_up)
+            val animation =
+                AnimationUtils.loadAnimation(this, R.anim.anim_slide_up)
             binding.framelayoutSettingMain.animation = animation
             binding.framelayoutSettingMain.visibility = View.VISIBLE
 
             val fragment = FragmentSettingMain.newInstance()
             fragment.setRecyclerViewMainAdapter(recyclerviewMainAdapter)
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(binding.framelayoutSettingMain.id,fragment)
-                    .commit()
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.framelayoutSettingMain.id, fragment)
+                .commit()
         }
 
-        binding.framelayoutSettingMain.setOnTouchListener(object : View.OnTouchListener{
+        binding.framelayoutSettingMain.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
                 return true
             }
@@ -90,36 +105,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerViewMain() {
-        val gridLayoutManager = GridLayoutManagerWrap(this,2)
+        val gridLayoutManager = GridLayoutManagerWrap(this, 2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
     }
 
     private fun filteringRecyclerviewItem() {
-        if(binding.edittextSearchMain.length() != 0){
+        if (binding.edittextSearchMain.length() != 0) {
             val currentString = binding.edittextSearchMain.text.toString()
             recyclerviewMainAdapter.filter.filter(currentString)
         }
         binding.RecyclerviewMain.scrollToPosition(0)
     }
 
+    private fun addTabLayoutCategory() {
+        val categoryList = mainActivityViewModel.getCategoryList()
+        for (i in categoryList.indices){
+            val tabItem = binding.tablayoutMain.newTab()
+            tabItem.text = categoryList[i]
+            binding.tablayoutMain.addTab(tabItem)
+        }
+    }
+
+    fun getCurrentText(): String {
+        return binding.edittextSearchMain.text.toString()
+    }
+
     fun frameLayoutGone() {
+        val animation =
+            AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
+        binding.framelayoutSettingMain.animation = animation
+
         binding.framelayoutSettingMain.visibility = View.GONE
     }
 
     fun moveRecyclerviewFirst() {
         binding.RecyclerviewMain.scrollToPosition(0)
-    }
-
-    fun getFilterInRecyclerviewAdapter() : Boolean {
-        if (binding.edittextSearchMain.length() != 0){
-            val str = binding.edittextSearchMain.text.toString()
-            recyclerviewMainAdapter.filter.filter(str)
-
-            return true
-        }
-        return false
     }
 
     override fun onBackPressed() {

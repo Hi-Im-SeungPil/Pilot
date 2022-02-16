@@ -1,100 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/fragment_setting_main_corner"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_top_round"
     tools:context=".mainactivity.FragmentSettingMain">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_fragment_setting_main"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:background="@drawable/shape_underline_edittext"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_fragment_setting_main_close"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="10dp"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fragment_setting_main_filter_title"
-            android:textSize="30sp"
             android:textColor="#000000"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RadioGroup
         android:id="@+id/radiogroup_fragment_setting_main"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_fragment_setting_main"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/constraint_fragment_setting_main">
+
         <RadioButton
             android:id="@+id/radiogroup_fragment_setting_main_rowkcal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/fragment_setting_main_radio_item1"
-            android:layout_weight="1"/>
+            android:textSize="20sp"
+            android:button="@null"/>
+
         <RadioButton
             android:id="@+id/radiogroup_fragment_setting_main_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/fragment_setting_main_radio_item2"
-            android:layout_weight="1"/>
+            android:textSize="20sp"
+            android:button="@null"/>
+
         <RadioButton
             android:id="@+id/radiogroup_fragment_setting_main_highkcal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/fragment_setting_main_radio_item3"
-            android:layout_weight="1"/>
+            android:textSize="20sp"
+            android:button="@null"/>
     </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/linear_rangeSlider_protein"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/radiogroup_fragment_setting_main">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="단백질" />
+
+        <com.google.android.material.slider.Slider
+            app:values="1"
+            android:id="@+id/seekbar_protein"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:valueFrom="0"
+            android:valueTo="100"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_rangeSlider_fat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_protein">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="지방" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/seekbar_fat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_rangeSlider_sugar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_fat">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="설탕" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/seekbar_sugar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_toggle_caffeine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_sugar">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="디카페인" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/toggle_caffeine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_reset_fragment_setting_main"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
             android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:background="@drawable/shape_round"
             android:text="@string/fragment_setting_main_filter_reset"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/fragment_setting_main_button_reset"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_admit_fragment_setting_main"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
             android:layout_weight="2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:background="@drawable/shape_round2"
             android:text="@string/fragment_setting_main_filter_admit"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/fragment_setting_main_button_admit"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
     </LinearLayout>
 

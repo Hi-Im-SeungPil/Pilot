@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="starbucks_menu_dto"
+            type="org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageview_detail"
+            android:layout_width="match_parent"
+            android:layout_height="340dp"
+            coffeeImage="@{starbucks_menu_dto.file_PATH}"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_detail_backspace"
+            android:layout_width="15dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="29dp"
+            android:background="@drawable/img_previous_2x"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="31dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginRight="26dp"
+            android:background="@drawable/img_favorite_unselected_2x"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="315dp"
+            android:background="@drawable/bg_detail"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/linear_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_detail"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="26dp"
+                    android:text="@string/recyclerview_main_item_starbucks"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/textview_detail_product_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="6dp"
+                    android:text="@{starbucks_menu_dto.product_NM}"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_detail_product_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginRight="38dp"
+                    android:text="@{starbucks_menu_dto.content}"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/textview_detail_product_kcal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="31dp"
+                    android:layout_marginTop="11dp"
+                    android:textSize="20sp"
+                    android:text="@{@string/recyclerview_main_item_kcal(starbucks_menu_dto.kcal)}"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

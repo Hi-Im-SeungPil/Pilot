@@ -1,4 +1,7 @@
 package org.jeonfeel.pilotproject1.mainactivity
+
+import java.io.Serializable
+
 //메뉴 DTO
 data class StarbucksMenuDTO(
     val content: String,
@@ -13,4 +16,4 @@ data class StarbucksMenuDTO(
     val protein: String,
     val sodium: String,
     val caffeine: String
-)
+) : Serializable

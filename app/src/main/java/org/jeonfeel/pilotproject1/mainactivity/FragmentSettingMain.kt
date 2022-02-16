@@ -15,6 +15,7 @@ import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
 import org.jeonfeel.pilotproject1.mainactivity.recyclerview.RecyclerviewMainAdapter
 
 class FragmentSettingMain : Fragment() {
+
     private var _binding: FragmentSettingMainBinding? = null
     private val binding get() = _binding
     private var adapter: RecyclerviewMainAdapter? = null
@@ -32,30 +33,42 @@ class FragmentSettingMain : Fragment() {
     ): View? {
         _binding = FragmentSettingMainBinding.inflate(inflater, container, false)
         binding?.radiogroupFragmentSettingMainNormal?.isChecked = true
+        initListener()
 
+        return _binding?.root
+    }
+
+    private fun initListener() {
         binding?.buttonFragmentSettingMainClose?.setOnClickListener {
             fragmentFinish()
         }
 
         binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
-            adapter?.updateSetting(sortInfo)
+            adapter?.updateSetting(sortInfo,0)
             fragmentFinish()
         }
 
         binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener{ radioGroup: RadioGroup, i: Int ->
-            sortInfo = 0
+            val SORT_ROW_KCAL = -1
+            val SORT_HIGH_KCAL = 1
+            val SORT_BASIC = 0
             when (radioGroup.checkedRadioButtonId) {
-                binding?.radiogroupFragmentSettingMainRowkcal?.id -> sortInfo = -1
-                binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo = 1
+                binding?.radiogroupFragmentSettingMainRowkcal?.id -> sortInfo = SORT_ROW_KCAL
+                binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo = SORT_HIGH_KCAL
             }
         }
-        return _binding?.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-        adapter = null
+    fun setRecyclerViewMainAdapter(adapter: RecyclerviewMainAdapter) {
+        this.adapter = adapter
+    }
+
+    fun fragmentFinish() {
+        (activity as MainActivity?)!!.frameLayoutGone()
+        activity?.supportFragmentManager
+            ?.beginTransaction()
+            ?.remove(this)
+            ?.commit()
     }
 
     override fun onAttach(context: Context) {
@@ -68,16 +81,10 @@ class FragmentSettingMain : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this,backPressedCallback)
     }
 
-    fun setRecyclerViewMainAdapter(adapter: RecyclerviewMainAdapter) {
-        this.adapter = adapter
-    }
-
-    fun fragmentFinish() {
-        activity?.supportFragmentManager
-            ?.beginTransaction()
-            ?.remove(this)
-            ?.commit()
-        (activity as MainActivity?)!!.frameLayoutGone()
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        adapter = null
     }
 
     companion object {
