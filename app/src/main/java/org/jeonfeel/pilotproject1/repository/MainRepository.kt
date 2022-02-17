@@ -84,4 +84,40 @@ class MainRepository(context: Context) {
     fun updateStarbucksMenu(position: Int): ArrayList<StarbucksMenuDTO> {
         return getStarbucksMenuResource(position)
     }
+
+    fun getFavorites(): HashMap<String,Int> {
+        val thread = Thread {
+            try {
+                val favoriteList = db.favoriteDao().selectAll()
+                for (element in favoriteList) {
+                    favoriteHashMap[element.productCD] = 0
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        thread.start()
+        try {
+            thread.join()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return favoriteHashMap
+    }
+
+    fun insertFavorite(productCD: String) {
+        val favorite = Favorite(productCD)
+        val thread = Thread {
+            db.favoriteDao().insert(favorite)
+        }
+        thread.start()
+    }
+
+    fun deleteFavorite(productCD: String) {
+        val favorite = Favorite(productCD)
+        val thread = Thread {
+            db.favoriteDao().delete(favorite)
+        }
+        thread.start()
+    }
 }

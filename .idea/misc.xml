@@ -9,24 +9,20 @@
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/drawable/main_tablayout_background.xml" value="0.1" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/drawable/main_tablayout_background_selected.xml" value="0.1" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/layout/activity_starbucksmenu_detail.xml" value="0.2015625" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/layout/item_recyclerview_main.xml" value="0.15092592592592594" />
         <entry key="..\:/Users/thrhc/Desktop/PilotProject1-master/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/thrhc/Desktop/PilotProject1-master/app/src/main/res/layout/item_recyclerview_main.xml" value="0.2" />
-        <entry key="app/src/main/res/drawable/bg_detail.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_button_admit.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_button_reset.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_corner.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_cornet.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/item_recyclerview_main_cardview.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/main_edittext.xml" value="0.245" />
-        <entry key="app/src/main/res/drawable/main_tablayout_backgroud_unselected.xml" value="0.183" />
-        <entry key="app/src/main/res/drawable/main_tablayout_background.xml" value="0.183" />
-        <entry key="app/src/main/res/drawable/under_line_edittext.xml" value="0.183" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.125" />
-        <entry key="app/src/main/res/layout/activity_starbucksmenu_detail.xml" value="0.125" />
-        <entry key="app/src/main/res/layout/fragment_setting_main.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_setting_main.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/layout/fragment_setting_main2.xml" value="0.36614583333333334" />
-        <entry key="app/src/main/res/layout/item_recyclerview_main.xml" value="0.11" />
+        <entry key="app/src/main/res/layout/item_recyclerview_main.xml" value="0.19322916666666667" />
       </map>
     </option>
   </component>

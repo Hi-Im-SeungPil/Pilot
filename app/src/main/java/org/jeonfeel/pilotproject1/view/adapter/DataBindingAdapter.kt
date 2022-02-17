@@ -10,3 +10,10 @@ fun loadCoffeeImage(view: ImageView, imageUrl: String){
         .load(imageUrl)
         .into(view)
 }
+
+@BindingAdapter("loadSrc")
+fun loadSrc(button: androidx.appcompat.widget.AppCompatButton, resId: Int) {
+    button.setBackgroundResource(resId)
+}
+
+

@@ -16,18 +16,26 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     private val recyclerViewMainStarbucksMenu = mainRepository.getStarbucksMenuList()
     private val categoryList = mainRepository.getCategoryList()
     private val recyclerViewMainStarbucksResource = mainRepository.getStarbucksMenuResource()
-//    private val favoriteList = mainRepository.getFavoriteList()
+    private val favorites = mainRepository.getFavorites()
 
     private val starbucksMenuLiveData = MutableLiveData(recyclerViewMainStarbucksMenu)
-//    private val favoriteLiveData = MutableLiveData(favoriteList)
+    private val favoriteLiveData = MutableLiveData(favorites)
 
     fun getStarbucksMenuLiveData() = starbucksMenuLiveData
     fun getStarbucksMenuResource() = recyclerViewMainStarbucksResource
     fun getCategoryList() = categoryList
-//    fun getFavoriteLiveData() = favoriteLiveData
+    fun getFavoriteLiveData() = favoriteLiveData
 
     fun updateStarbucksMenu(position: Int) {
         starbucksMenuLiveData.value?.clear()
         starbucksMenuLiveData.value = mainRepository.updateStarbucksMenu(position)
+    }
+
+    fun insertFavorite(productCD: String) {
+        mainRepository.insertFavorite(productCD)
+    }
+
+    fun deleteFavorite(productCD: String) {
+        mainRepository.deleteFavorite(productCD)
     }
 }

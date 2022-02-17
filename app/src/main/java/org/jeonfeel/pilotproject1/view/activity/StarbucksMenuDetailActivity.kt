@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.res.ResourcesCompat
+import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.data.database.AppDatabase
 import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.databinding.ActivityStarbucksmenuDetailBinding
@@ -17,6 +20,7 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
     lateinit var starbucksMenuDTO: StarbucksMenuDTO
     private var productCD: String = ""
     private var favoriteIsChecked = false
+    private var favoriteIsClicked = false
     private val db = AppDatabase.getDbInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,31 +32,31 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         initListener()
     }
 
+    @Suppress("RedundantIf")
     private fun initListener() {
-        binding.buttonDetailBackspace.setOnClickListener{
-            val newIntent = Intent(this, MainActivity::class.java)
-            newIntent.putExtra("productCD", productCD)
-            newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
-            setResult(RESULT_OK, newIntent)
+        binding.buttonDetailBackspace.setOnClickListener {
+            if (favoriteIsClicked) {
+                val newIntent = Intent(this, MainActivity::class.java)
+                newIntent.putExtra("productCD", productCD)
+                newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
+                setResult(RESULT_OK, newIntent)
+            }
             finish()
         }
 
-        binding.buttonDetailFavorite.setOnClickListener{
+        binding.buttonDetailFavorite.setOnClickListener {
+            var imgRes = 0
             if (!favoriteIsChecked) {
-                val thread = Thread{
-                    val favorite = Favorite(starbucksMenuDTO.product_CD)
-                    db.favoriteDao().insert(favorite)
-                    favoriteIsChecked = true
-                }
-                thread.start()
+                favoriteIsChecked = true
+                imgRes = R.drawable.img_favorite_2x
             } else {
-                val thread = Thread{
-                    val favorite = Favorite(starbucksMenuDTO.product_CD)
-                    db.favoriteDao().delete(favorite)
-                    favoriteIsChecked = false
-                }
-                thread.start()
+                favoriteIsChecked = false
+                imgRes = R.drawable.img_favorite_unselected_2x
             }
+            with(binding) {
+                binding.resId = imgRes
+            }
+            favoriteIsClicked = true
         }
     }
 
@@ -60,18 +64,26 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         val intent = this.intent
         starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
         productCD = intent.getStringExtra("productCD").toString()
-        favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked",false)
-        with(binding){
+        favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
+
+        with(binding) {
             binding.starbucksMenuDto = starbucksMenuDTO
+            if (favoriteIsChecked) {
+                binding.resId = R.drawable.img_favorite_2x
+            } else {
+                binding.resId = R.drawable.img_favorite_unselected_2x
+            }
             executePendingBindings()
         }
     }
 
     override fun onBackPressed() {
-        val newIntent = Intent(this,MainActivity::class.java)
-        newIntent.putExtra("productCD",productCD)
-        newIntent.putExtra("favoriteIsSelected",productCD)
-        setResult(RESULT_OK,newIntent)
+        if (favoriteIsClicked) {
+            val newIntent = Intent(this, MainActivity::class.java)
+            newIntent.putExtra("productCD", productCD)
+            newIntent.putExtra("favoriteIsSelected", favoriteIsChecked)
+            setResult(RESULT_OK, newIntent)
+        }
         super.onBackPressed()
     }
 }

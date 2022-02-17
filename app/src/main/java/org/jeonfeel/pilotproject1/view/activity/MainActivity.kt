@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.MutableLiveData
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var favoriteHashMap = HashMap<String, Int>()
+    lateinit var favoritesLiveData: MutableLiveData<HashMap<String, Int>>
     private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +49,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initActivity() {
         db = AppDatabase.getDbInstance(this@MainActivity)
-        initRecyclerViewMain()
         initObserver()
+        initRecyclerViewMain()
         initListener()
         addTabLayoutCategory()
     }
@@ -61,6 +63,13 @@ class MainActivity : AppCompatActivity() {
 
         mainActivityViewModel.getStarbucksMenuLiveData().observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
+        })
+
+        favoritesLiveData = mainActivityViewModel.getFavoriteLiveData()
+        favoriteHashMap = favoritesLiveData.value!!
+
+        favoritesLiveData.observe(this, Observer {
+            recyclerviewMainAdapter.updateFavoriteImage()
         })
     }
 
@@ -119,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         val gridLayoutManager = GridLayoutManagerWrap(this, 2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
-        recyclerviewMainAdapter.setFavoriteHashMap(getFavorites())
+        recyclerviewMainAdapter.setFavoriteHashMap(favoriteHashMap)
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
     }
 
@@ -133,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun addTabLayoutCategory() {
         val categoryList = mainActivityViewModel.getCategoryList()
-        for (i in categoryList.indices){
+        for (i in categoryList.indices) {
             val tabItem = binding.tablayoutMain.newTab()
             tabItem.text = categoryList[i]
             binding.tablayoutMain.addTab(tabItem)
@@ -152,44 +161,25 @@ class MainActivity : AppCompatActivity() {
         binding.framelayoutSettingMain.visibility = View.GONE
     }
 
-    fun getFavorites(): HashMap<String,Int> {
-        val thread = Thread {
-            try {
-                val favoriteList = db.favoriteDao().selectAll()
-                for (element in favoriteList) {
-                    favoriteHashMap[element.productCD] = 0
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        thread.start()
-        try {
-            thread.join()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return favoriteHashMap
-    }
+    val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            Log.d(TAG, result.resultCode.toString())
+            if (result.resultCode == RESULT_OK) {
+                val intent = result.data
+                val productCD: String = intent!!.getStringExtra("productCD").toString()
+                val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
-    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        Log.d(TAG,result.resultCode.toString())
-        if (result.resultCode == RESULT_OK) {
-            val intent = result.data
-            val productCD: String = intent!!.getStringExtra("productCD").toString()
-            Log.d(TAG,productCD)
-            val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked",false)
-            Log.d(TAG,favoriteIsChecked.toString())
-            if (favoriteIsChecked) {
-                favoriteHashMap[productCD] = 0
-            } else {
-                if (favoriteHashMap[productCD] != null) {
+                if (favoriteIsChecked && favoriteHashMap[productCD] == null) {
+                    mainActivityViewModel.insertFavorite(productCD)
+                    favoriteHashMap[productCD] = 0
+                    favoritesLiveData.value = favoriteHashMap
+                } else if (!favoriteIsChecked && favoriteHashMap[productCD] != null) {
+                    mainActivityViewModel.deleteFavorite(productCD)
                     favoriteHashMap.remove(productCD)
+                    favoritesLiveData.value = favoriteHashMap
                 }
             }
-            recyclerviewMainAdapter.updateFavoriteImage(productCD, favoriteIsChecked)
         }
-    }
 
     override fun onBackPressed() {
         super.onBackPressed()
