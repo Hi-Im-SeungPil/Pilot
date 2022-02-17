@@ -87,27 +87,13 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-    fun updateFavoriteImage(productCD: String) {
-        if (productCD != ""){
-            favoriteHashMap.remove(productCD)
-            Log.d("recycler", "isnotnull")
-        }else {
+    fun updateFavoriteImage(productCD: String, favoriteIsChecked: Boolean) {
+        if (favoriteIsChecked){
             favoriteHashMap.put(productCD, 0)
-            Log.d("recycler", "null")
-            Log.d("recycler", productCD)
+        }else {
+            favoriteHashMap.remove(productCD)
         }
         notifyItemChanged(selectedItemPosition!!)
-    }
-
-    fun filterCaffeine() {
-        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-        for (i in 0 until filteredList.size) {
-            if (filteredList[i].caffeine.toInt() == 0) {
-                filteredCaffeineList.add(filteredList[i])
-            }
-        }
-        filteredList.clear()
-        filteredList.addAll(filteredCaffeineList)
     }
 
     override fun getFilter(): Filter {
@@ -136,6 +122,17 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 notifyDataSetChanged()
             }
         }
+    }
+
+    private fun filterCaffeine() {
+        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
+        for (i in 0 until filteredList.size) {
+            if (filteredList[i].caffeine.toInt() == 0) {
+                filteredCaffeineList.add(filteredList[i])
+            }
+        }
+        filteredList.clear()
+        filteredList.addAll(filteredCaffeineList)
     }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
@@ -171,15 +168,12 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
 
         fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
-            val pp = favoriteHashMap[starbucksMenuDTO.product_CD]
-            if (pp == null) {
-                Log.d("recycler23", starbucksMenuDTO.product_CD)
+            val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
+            if (favorite == null) {
                 binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
-            } else if(pp == 0) {
-                Log.d("recycler2", favoriteHashMap[starbucksMenuDTO.product_CD].toString())
+            } else if(favorite == 0) {
                 binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
             }
-            Log.d("setFavoriteImage", "Favorite 실행")
         }
     }
 }

@@ -16,25 +16,24 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
     lateinit var binding: ActivityStarbucksmenuDetailBinding
     lateinit var starbucksMenuDTO: StarbucksMenuDTO
     private var productCD: String = ""
-    private var favoriteIsChecked = true
+    private var favoriteIsChecked = false
     private val db = AppDatabase.getDbInstance(this)
-    lateinit var newintent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStarbucksmenuDetailBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
-        newintent = Intent(this,MainActivity::class.java)
         getProductInfo()
         initListener()
     }
 
     private fun initListener() {
         binding.buttonDetailBackspace.setOnClickListener{
-            newintent.putExtra("productCD",productCD)
-            newintent.putExtra("favoriteIsChecked",favoriteIsChecked)
-            setResult(-1,intent)
+            val newIntent = Intent(this, MainActivity::class.java)
+            newIntent.putExtra("productCD", productCD)
+            newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
+            setResult(RESULT_OK, newIntent)
             finish()
         }
 
@@ -61,7 +60,7 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         val intent = this.intent
         starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
         productCD = intent.getStringExtra("productCD").toString()
-        favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked",true)
+        favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked",false)
         with(binding){
             binding.starbucksMenuDto = starbucksMenuDTO
             executePendingBindings()
@@ -69,9 +68,10 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        val newIntent = Intent(this,MainActivity::class.java)
+        newIntent.putExtra("productCD",productCD)
+        newIntent.putExtra("favoriteIsSelected",productCD)
+        setResult(RESULT_OK,newIntent)
         super.onBackPressed()
-        newintent.putExtra("favoriteIsSelected",productCD)
-        Log.d(TAG, RESULT_OK.toString())
-        setResult(-1,intent)
     }
 }

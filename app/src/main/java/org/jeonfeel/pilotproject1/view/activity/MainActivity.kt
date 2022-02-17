@@ -173,13 +173,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        Log.d(TAG, "startForResult")
-        Log.d(TAG, result.resultCode.toString())
-        Log.d(TAG, RESULT_OK.toString())
+        Log.d(TAG,result.resultCode.toString())
         if (result.resultCode == RESULT_OK) {
             val intent = result.data
             val productCD: String = intent!!.getStringExtra("productCD").toString()
-            val favoriteIsChecked = intent!!.getBooleanExtra("favoriteIsChecked",true)
+            Log.d(TAG,productCD)
+            val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked",false)
+            Log.d(TAG,favoriteIsChecked.toString())
             if (favoriteIsChecked) {
                 favoriteHashMap[productCD] = 0
             } else {
@@ -187,22 +187,8 @@ class MainActivity : AppCompatActivity() {
                     favoriteHashMap.remove(productCD)
                 }
             }
-            recyclerviewMainAdapter.updateFavoriteImage(productCD)
+            recyclerviewMainAdapter.updateFavoriteImage(productCD, favoriteIsChecked)
         }
-    }
-
-//    fun addFavorites(productCD: String) {
-//        favoriteHashMap.put(productCD, 0)
-//        recyclerviewMainAdapter.updateFavoriteImage()
-//    }
-//
-//    fun deleteFavorites(productCD: String) {
-//        favoriteHashMap.remove(productCD)
-//        recyclerviewMainAdapter.updateFavoriteImage()
-//    }
-
-    fun moveRecyclerviewFirst() {
-        binding.RecyclerviewMain.scrollToPosition(0)
     }
 
     override fun onBackPressed() {
