@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item_recyclerview_main"
-            type="org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO" />
+            type="org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -80,11 +80,12 @@
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.appcompat.widget.AppCompatButton
+                    <ImageView
+                        android:id="@+id/imageview_recyclerview_main_item_favorite"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_marginRight="13dp"
-                        android:background="@drawable/img_favorite_unselected_2x"
+                        android:src="@drawable/img_favorite_unselected_2x"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

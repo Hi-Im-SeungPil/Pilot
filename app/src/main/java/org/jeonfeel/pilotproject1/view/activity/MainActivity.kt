@@ -1,21 +1,29 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.view.activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import org.jeonfeel.pilotproject1.R
+import org.jeonfeel.pilotproject1.data.database.AppDatabase
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
-import org.jeonfeel.pilotproject1.mainactivity.recyclerview.GridLayoutManagerWrap
-import org.jeonfeel.pilotproject1.mainactivity.recyclerview.RecyclerviewMainAdapter
+import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
+import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
+import org.jeonfeel.pilotproject1.viewmodel.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
+    private var favoriteHashMap = HashMap<String, Int>()
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +46,7 @@ class MainActivity : AppCompatActivity() {
      * 액티비티 초기화
      */
     private fun initActivity() {
+        db = AppDatabase.getDbInstance(this@MainActivity)
         initRecyclerViewMain()
         initObserver()
         initListener()
@@ -108,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         val gridLayoutManager = GridLayoutManagerWrap(this, 2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
+        recyclerviewMainAdapter.setFavoriteHashMap(getFavorites())
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
     }
 
@@ -139,6 +151,55 @@ class MainActivity : AppCompatActivity() {
 
         binding.framelayoutSettingMain.visibility = View.GONE
     }
+
+    fun getFavorites(): HashMap<String,Int> {
+        val thread = Thread {
+            try {
+                val favoriteList = db.favoriteDao().selectAll()
+                for (element in favoriteList) {
+                    favoriteHashMap[element.productCD] = 0
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        thread.start()
+        try {
+            thread.join()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return favoriteHashMap
+    }
+
+    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        Log.d(TAG, "startForResult")
+        Log.d(TAG, result.resultCode.toString())
+        Log.d(TAG, RESULT_OK.toString())
+        if (result.resultCode == RESULT_OK) {
+            val intent = result.data
+            val productCD: String = intent!!.getStringExtra("productCD").toString()
+            val favoriteIsChecked = intent!!.getBooleanExtra("favoriteIsChecked",true)
+            if (favoriteIsChecked) {
+                favoriteHashMap[productCD] = 0
+            } else {
+                if (favoriteHashMap[productCD] != null) {
+                    favoriteHashMap.remove(productCD)
+                }
+            }
+            recyclerviewMainAdapter.updateFavoriteImage(productCD)
+        }
+    }
+
+//    fun addFavorites(productCD: String) {
+//        favoriteHashMap.put(productCD, 0)
+//        recyclerviewMainAdapter.updateFavoriteImage()
+//    }
+//
+//    fun deleteFavorites(productCD: String) {
+//        favoriteHashMap.remove(productCD)
+//        recyclerviewMainAdapter.updateFavoriteImage()
+//    }
 
     fun moveRecyclerviewFirst() {
         binding.RecyclerviewMain.scrollToPosition(0)

@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1.retrofit
+package org.jeonfeel.pilotproject1.data.remote.api
 
 import android.content.Context
 import android.util.Log

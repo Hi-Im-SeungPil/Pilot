@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_top_round"
-    tools:context=".mainactivity.FragmentSettingMain">
+    tools:context=".view.fragment.FragmentSettingMain">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_fragment_setting_main"
@@ -88,7 +88,6 @@
             android:text="단백질" />
 
         <com.google.android.material.slider.Slider
-            app:values="1"
             android:id="@+id/seekbar_protein"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

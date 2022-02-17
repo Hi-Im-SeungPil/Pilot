@@ -1,26 +1,33 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import org.jeonfeel.pilotproject1.data.database.entity.Favorite
+import org.jeonfeel.pilotproject1.repository.MainRepository
 
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "MainActivityViewModel"
-    private val mainRepository = MainRepository()
+    private val mainRepository = MainRepository(application.applicationContext)
+
     private val recyclerViewMainStarbucksMenu = mainRepository.getStarbucksMenuList()
     private val categoryList = mainRepository.getCategoryList()
     private val recyclerViewMainStarbucksResource = mainRepository.getStarbucksMenuResource()
+//    private val favoriteList = mainRepository.getFavoriteList()
+
     private val starbucksMenuLiveData = MutableLiveData(recyclerViewMainStarbucksMenu)
+//    private val favoriteLiveData = MutableLiveData(favoriteList)
 
     fun getStarbucksMenuLiveData() = starbucksMenuLiveData
     fun getStarbucksMenuResource() = recyclerViewMainStarbucksResource
     fun getCategoryList() = categoryList
+//    fun getFavoriteLiveData() = favoriteLiveData
 
     fun updateStarbucksMenu(position: Int) {
-        val recyclerViewMainStarbucksResource = mainRepository.getStarbucksMenuResource(position)
         starbucksMenuLiveData.value?.clear()
-        starbucksMenuLiveData.value = recyclerViewMainStarbucksResource
+        starbucksMenuLiveData.value = mainRepository.updateStarbucksMenu(position)
     }
 }

@@ -1,21 +1,27 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.repository
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.jeonfeel.pilotproject1.retrofit.RetrofitClient
-import org.jeonfeel.pilotproject1.retrofit.RetrofitService
+import org.jeonfeel.pilotproject1.data.database.AppDatabase
+import org.jeonfeel.pilotproject1.data.database.entity.Favorite
+import org.jeonfeel.pilotproject1.data.remote.api.RetrofitClient
+import org.jeonfeel.pilotproject1.data.remote.api.RetrofitService
+import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import retrofit2.Call
 
-class MainRepository {
+class MainRepository(context: Context) {
 
     private val retrofit = RetrofitClient().getRetrofitClient()
     private val service = retrofit.create(RetrofitService::class.java)
     private val call: Call<JsonObject> = service.getStarbucksMenu()
+    private val db = AppDatabase.getDbInstance(context)
+
     private var starbucksMenuJsonObject: JsonObject? = null
     private lateinit var categoryList: List<String>
+    private var favoriteHashMap: HashMap<String, Int> = hashMapOf()
 
     fun getStarbucksMenuList(): ArrayList<StarbucksMenuDTO> {
         var starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
@@ -73,5 +79,9 @@ class MainRepository {
     fun getCategoryList(): List<String> {
 
         return categoryList
+    }
+
+    fun updateStarbucksMenu(position: Int): ArrayList<StarbucksMenuDTO> {
+        return getStarbucksMenuResource(position)
     }
 }

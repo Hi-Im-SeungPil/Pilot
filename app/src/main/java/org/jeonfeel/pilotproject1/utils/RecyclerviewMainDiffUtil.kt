@@ -1,7 +1,7 @@
-package org.jeonfeel.pilotproject1.mainactivity.recyclerview
+package org.jeonfeel.pilotproject1.utils
 
 import androidx.recyclerview.widget.DiffUtil
-import org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO
+import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 
 class RecyclerviewMainDiffUtil(private val oldList: ArrayList<StarbucksMenuDTO>, private val currentList: ArrayList<StarbucksMenuDTO>):
     DiffUtil.Callback() {

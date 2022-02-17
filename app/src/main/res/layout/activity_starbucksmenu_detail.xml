@@ -6,7 +6,7 @@
     <data>
         <variable
             name="starbucks_menu_dto"
-            type="org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO" />
+            type="org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +31,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_detail_favorite"
             android:layout_width="31dp"
             android:layout_height="31dp"
             android:layout_marginTop="29dp"

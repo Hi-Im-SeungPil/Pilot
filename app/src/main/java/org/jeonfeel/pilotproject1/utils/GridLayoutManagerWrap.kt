@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1.mainactivity.recyclerview
+package org.jeonfeel.pilotproject1.utils
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager

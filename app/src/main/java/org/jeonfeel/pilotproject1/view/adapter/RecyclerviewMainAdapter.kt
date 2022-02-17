@@ -1,18 +1,24 @@
-package org.jeonfeel.pilotproject1.mainactivity.recyclerview
+package org.jeonfeel.pilotproject1.view.adapter
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
-import org.jeonfeel.pilotproject1.mainactivity.MainActivity
-import org.jeonfeel.pilotproject1.mainactivity.StarbucksMenuDTO
-import org.jeonfeel.pilotproject1.starbucks_detail_activity.StarbucksMenuDetailActivity
+import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
+import org.jeonfeel.pilotproject1.view.activity.MainActivity
+import org.jeonfeel.pilotproject1.utils.RecyclerviewMainDiffUtil
+import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
 
 class RecyclerviewMainAdapter(private val context: Context) :
@@ -21,6 +27,8 @@ class RecyclerviewMainAdapter(private val context: Context) :
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     private var filteredList = recyclerViewMainItem
     private var copyMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
+    private var favoriteHashMap = hashMapOf<String, Int>()
+    private var selectedItemPosition: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -34,12 +42,17 @@ class RecyclerviewMainAdapter(private val context: Context) :
         holder.itemBinding(filteredList[position])
         holder.setMarquee()
         holder.setItemClickListener(filteredList[position])
+        holder.setFavoriteImage(filteredList[position])
     }
 
     override fun getItemCount(): Int = filteredList.size
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
+    }
+
+    fun setFavoriteHashMap(newHashMap: HashMap<String, Int>) {
+        favoriteHashMap = newHashMap
     }
 
     fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
@@ -56,7 +69,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
     fun updateSetting(sortInfo: Int, caffeineCheck: Int) {
         if (sortInfo != 0) {
-            filteringCaffeine()
+            filterCaffeine()
             when (sortInfo) {
                 -1 -> filteredList.sortBy { it.kcal.toInt() }
                 1 -> filteredList.sortByDescending { it.kcal.toInt() }
@@ -72,6 +85,29 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 notifyItemRangeChanged(0, itemCount)
             }
         }
+    }
+
+    fun updateFavoriteImage(productCD: String) {
+        if (productCD != ""){
+            favoriteHashMap.remove(productCD)
+            Log.d("recycler", "isnotnull")
+        }else {
+            favoriteHashMap.put(productCD, 0)
+            Log.d("recycler", "null")
+            Log.d("recycler", productCD)
+        }
+        notifyItemChanged(selectedItemPosition!!)
+    }
+
+    fun filterCaffeine() {
+        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
+        for (i in 0 until filteredList.size) {
+            if (filteredList[i].caffeine.toInt() == 0) {
+                filteredCaffeineList.add(filteredList[i])
+            }
+        }
+        filteredList.clear()
+        filteredList.addAll(filteredCaffeineList)
     }
 
     override fun getFilter(): Filter {
@@ -102,17 +138,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-    fun filteringCaffeine() {
-        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-        for (i in 0 until filteredList.size){
-            if (filteredList[i].caffeine.toInt() == 0) {
-                filteredCaffeineList.add(filteredList[i])
-            }
-        }
-        filteredList.clear()
-        filteredList.addAll(filteredCaffeineList)
-    }
-
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
         RecyclerView.ViewHolder(binding.root) {
         //리사이클러뷰 아이템 바인딩
@@ -132,8 +157,29 @@ class RecyclerviewMainAdapter(private val context: Context) :
             binding.cardviewRecyclerviewMainItem.setOnClickListener {
                 val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
                 intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
-                context.startActivity(intent)
+                intent.putExtra("productCD", starbucksMenuDTO.product_CD)
+
+                if (favoriteHashMap[starbucksMenuDTO.product_CD] != null){
+                    intent.putExtra("favoriteIsChecked",true)
+                } else {
+                    intent.putExtra("favoriteIsChecked",false)
+                }
+
+                (context as MainActivity).startForResult.launch(intent)
+                selectedItemPosition = adapterPosition
             }
+        }
+
+        fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
+            val pp = favoriteHashMap[starbucksMenuDTO.product_CD]
+            if (pp == null) {
+                Log.d("recycler23", starbucksMenuDTO.product_CD)
+                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
+            } else if(pp == 0) {
+                Log.d("recycler2", favoriteHashMap[starbucksMenuDTO.product_CD].toString())
+                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
+            }
+            Log.d("setFavoriteImage", "Favorite 실행")
         }
     }
 }

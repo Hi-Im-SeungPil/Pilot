@@ -1,18 +1,16 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.view.fragment
 
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
-import org.jeonfeel.pilotproject1.mainactivity.recyclerview.RecyclerviewMainAdapter
+import org.jeonfeel.pilotproject1.view.activity.MainActivity
+import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 
 class FragmentSettingMain : Fragment() {
 

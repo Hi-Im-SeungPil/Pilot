@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.view.adapter
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter

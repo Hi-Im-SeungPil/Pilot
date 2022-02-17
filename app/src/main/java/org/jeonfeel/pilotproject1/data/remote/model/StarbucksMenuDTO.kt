@@ -1,4 +1,4 @@
-package org.jeonfeel.pilotproject1.mainactivity
+package org.jeonfeel.pilotproject1.data.remote.model
 
 import java.io.Serializable
 
