@@ -15,13 +15,11 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 
 class StarbucksMenuDetailActivity : AppCompatActivity() {
 
-    val TAG = "StarbucksMenuDetailActivity"
+    val TAG = StarbucksMenuDetailActivity::class.java.simpleName
     lateinit var binding: ActivityStarbucksmenuDetailBinding
-    lateinit var starbucksMenuDTO: StarbucksMenuDTO
     private var productCD: String = ""
     private var favoriteIsChecked = false
     private var favoriteIsClicked = false
-    private val db = AppDatabase.getDbInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +30,13 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         initListener()
     }
 
+    /**
+     * 리스너
+     * */
     @Suppress("RedundantIf")
     private fun initListener() {
         binding.buttonDetailBackspace.setOnClickListener {
-            if (favoriteIsClicked) {
-                val newIntent = Intent(this, MainActivity::class.java)
-                newIntent.putExtra("productCD", productCD)
-                newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
-                setResult(RESULT_OK, newIntent)
-            }
+            setResult()
             finish()
         }
 
@@ -53,16 +49,14 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
                 favoriteIsChecked = false
                 imgRes = R.drawable.img_favorite_unselected_2x
             }
-            with(binding) {
-                binding.resId = imgRes
-            }
+            binding.resId = imgRes
             favoriteIsClicked = true
         }
     }
 
     private fun getProductInfo() {
         val intent = this.intent
-        starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
+        val starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
         productCD = intent.getStringExtra("productCD").toString()
         favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
@@ -77,13 +71,17 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
+    private fun setResult() {
         if (favoriteIsClicked) {
-            val newIntent = Intent(this, MainActivity::class.java)
-            newIntent.putExtra("productCD", productCD)
-            newIntent.putExtra("favoriteIsSelected", favoriteIsChecked)
-            setResult(RESULT_OK, newIntent)
+            val resultIntent = Intent(this, MainActivity::class.java)
+            resultIntent.putExtra("productCD", productCD)
+            resultIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
+            setResult(RESULT_OK, resultIntent)
         }
+    }
+
+    override fun onBackPressed() {
+        setResult()
         super.onBackPressed()
     }
 }

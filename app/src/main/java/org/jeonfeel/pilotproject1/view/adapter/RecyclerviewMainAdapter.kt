@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -25,6 +26,7 @@ import kotlin.collections.ArrayList
 class RecyclerviewMainAdapter(private val context: Context) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
 
+    private val TAG = RecyclerviewMainAdapter::class.java.simpleName
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     private var filteredList = recyclerViewMainItem
     private var copyMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
@@ -137,6 +139,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         RecyclerView.ViewHolder(binding.root) {
         //리사이클러뷰 아이템 바인딩
         fun itemBinding(starbucksMenuDTO: StarbucksMenuDTO) {
+            binding.textviewRecyclerviewMainItemProductName.setHorizontallyScrolling(true)
             with(binding) {
                 binding.itemRecyclerviewMain = starbucksMenuDTO
                 executePendingBindings()
@@ -144,8 +147,13 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
 
         fun setMarquee() {
-            binding.textviewRecyclerviewMainItemProductName.setHorizontallyScrolling(true)
-            binding.textviewRecyclerviewMainItemProductName.isSelected = true
+            binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object :
+                View.OnLongClickListener {
+                override fun onLongClick(p0: View?): Boolean {
+                    binding.textviewRecyclerviewMainItemProductName.isSelected = true
+                    return true
+                }
+            })
         }
 
         fun setItemClickListener(starbucksMenuDTO: StarbucksMenuDTO) {

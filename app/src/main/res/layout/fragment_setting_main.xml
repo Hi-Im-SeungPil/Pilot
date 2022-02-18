@@ -23,6 +23,7 @@
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
+            android:background="@drawable/img_delete_96px"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -37,6 +38,23 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linear_toggle_caffeine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/toggle_caffeine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="디카페인" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RadioGroup
@@ -47,31 +65,29 @@
         app:layout_constraintTop_toBottomOf="@+id/constraint_fragment_setting_main">
 
         <RadioButton
-            android:id="@+id/radiogroup_fragment_setting_main_rowkcal"
+            android:id="@+id/radiogroup_fragment_setting_main_lowkcal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/fragment_setting_main_radio_item1"
-            android:textSize="20sp"
-            android:button="@null"/>
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/radiogroup_fragment_setting_main_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:checked="true"
             android:text="@string/fragment_setting_main_radio_item2"
-            android:textSize="20sp"
-            android:button="@null"/>
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/radiogroup_fragment_setting_main_highkcal"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/fragment_setting_main_radio_item3"
-            android:textSize="20sp"
-            android:button="@null"/>
+            android:textSize="20sp" />
     </RadioGroup>
 
     <LinearLayout
@@ -93,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:valueFrom="0"
-            android:valueTo="100"/>
+            android:valueTo="100" />
     </LinearLayout>
 
     <LinearLayout
@@ -134,25 +150,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_toggle_caffeine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_sugar">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="디카페인" />
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/toggle_caffeine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout

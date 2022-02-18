@@ -14,11 +14,11 @@ import retrofit2.Call
 
 class MainRepository(context: Context) {
 
+    private val TAG = MainRepository::class.java.simpleName
     private val retrofit = RetrofitClient().getRetrofitClient()
     private val service = retrofit.create(RetrofitService::class.java)
     private val call: Call<JsonObject> = service.getStarbucksMenu()
     private val db = AppDatabase.getDbInstance(context)
-
     private var starbucksMenuJsonObject: JsonObject? = null
     private lateinit var categoryList: List<String>
     private var favoriteHashMap: HashMap<String, Int> = hashMapOf()
@@ -85,7 +85,7 @@ class MainRepository(context: Context) {
         return getStarbucksMenuResource(position)
     }
 
-    fun getFavorites(): HashMap<String,Int> {
+    fun getFavorites(): HashMap<String, Int> {
         val thread = Thread {
             try {
                 val favoriteList = db.favoriteDao().selectAll()
@@ -97,11 +97,7 @@ class MainRepository(context: Context) {
             }
         }
         thread.start()
-        try {
-            thread.join()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+
         return favoriteHashMap
     }
 

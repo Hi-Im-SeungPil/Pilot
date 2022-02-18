@@ -6,18 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".view.activity.MainActivity">
 
-<!--    <ImageView-->
-<!--        android:layout_width="207dp"-->
-<!--        android:layout_height="208dp"-->
-<!--        android:background="@drawable/img_circle_2x" />-->
+    <!--    <ImageView-->
+    <!--        android:layout_width="207dp"-->
+    <!--        android:layout_height="208dp"-->
+    <!--        android:background="@drawable/img_circle_2x" />-->
 
-<!--    <ImageView-->
-<!--        android:layout_width="207dp"-->
-<!--        android:layout_height="208dp"-->
-<!--        android:background="@drawable/img_circle_2x"-->
-<!--        tools:ignore="MissingConstraints"-->
-<!--        tools:layout_editor_absoluteX="311dp"-->
-<!--        tools:layout_editor_absoluteY="400dp" />-->
+    <!--    <ImageView-->
+    <!--        android:layout_width="207dp"-->
+    <!--        android:layout_height="208dp"-->
+    <!--        android:background="@drawable/img_circle_2x"-->
+    <!--        tools:ignore="MissingConstraints"-->
+    <!--        tools:layout_editor_absoluteX="311dp"-->
+    <!--        tools:layout_editor_absoluteY="400dp" />-->
 
     <TextView
         android:id="@+id/textview_product"
@@ -37,9 +37,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="18dp"
+        android:background="@color/design_default_color_background"
         android:elevation="10dp"
         android:visibility="gone"
-        android:background="@color/design_default_color_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_product" />
 
@@ -49,7 +49,7 @@
         android:layout_height="53dp"
         android:layout_marginLeft="23dp"
         android:layout_marginTop="18dp"
-        android:background="@drawable/main_edittext"
+        android:background="@drawable/shape_radius10dp"
         android:hint="@string/activity_main_edittext_hint"
         android:maxLines="1"
         android:paddingLeft="57dp"

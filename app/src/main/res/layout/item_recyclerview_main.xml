@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="item_recyclerview_main"
             type="org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO" />

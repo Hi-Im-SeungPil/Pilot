@@ -1,7 +1,7 @@
 package org.jeonfeel.pilotproject1.view.activity
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -11,15 +11,13 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.data.database.AppDatabase
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
@@ -28,13 +26,12 @@ import org.jeonfeel.pilotproject1.viewmodel.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = "MainActivity"
+    private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private var favoriteHashMap = HashMap<String, Int>()
-    lateinit var favoritesLiveData: MutableLiveData<HashMap<String, Int>>
-    private lateinit var db: AppDatabase
+    lateinit var favoritesLiveData: LiveData<HashMap<String, Int>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +45,6 @@ class MainActivity : AppCompatActivity() {
      * 액티비티 초기화
      */
     private fun initActivity() {
-        db = AppDatabase.getDbInstance(this@MainActivity)
         initObserver()
         initRecyclerViewMain()
         initListener()
@@ -170,13 +166,11 @@ class MainActivity : AppCompatActivity() {
                 val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
                 if (favoriteIsChecked && favoriteHashMap[productCD] == null) {
-                    mainActivityViewModel.insertFavorite(productCD)
+                    mainActivityViewModel.insertFavorite(productCD, favoriteHashMap)
                     favoriteHashMap[productCD] = 0
-                    favoritesLiveData.value = favoriteHashMap
                 } else if (!favoriteIsChecked && favoriteHashMap[productCD] != null) {
-                    mainActivityViewModel.deleteFavorite(productCD)
+                    mainActivityViewModel.deleteFavorite(productCD, favoriteHashMap)
                     favoriteHashMap.remove(productCD)
-                    favoritesLiveData.value = favoriteHashMap
                 }
             }
         }
