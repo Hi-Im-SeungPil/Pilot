@@ -23,6 +23,7 @@
             coffeeImage="@{starbucks_menu_dto.file_PATH}"
             android:layout_width="match_parent"
             android:layout_height="340dp"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton

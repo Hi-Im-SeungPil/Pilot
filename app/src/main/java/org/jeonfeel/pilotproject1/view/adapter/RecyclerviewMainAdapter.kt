@@ -1,25 +1,19 @@
 package org.jeonfeel.pilotproject1.view.adapter
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.view.activity.MainActivity
-import org.jeonfeel.pilotproject1.utils.RecyclerviewMainDiffUtil
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
 
@@ -43,9 +37,9 @@ class RecyclerviewMainAdapter(private val context: Context) :
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
-        holder.setItemClickListener(filteredList[position])
-        holder.setFavoriteImage(filteredList[position])
-        holder.setMarquee()
+        setItemClickListener(holder.getBinding(), filteredList[position], holder)
+        setFavoriteImage(holder.getBinding(), filteredList[position])
+        setMarquee(holder.getBinding())
     }
 
     override fun getItemCount(): Int = filteredList.size
@@ -124,6 +118,41 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
+    private fun setMarquee(binding: ItemRecyclerviewMainBinding) {
+        binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object : View.OnLongClickListener {
+            override fun onLongClick(p0: View?): Boolean {
+                binding.textviewRecyclerviewMainItemProductName.isSelected = true
+                return true
+            }
+        })
+    }
+
+    private fun setItemClickListener(binding: ItemRecyclerviewMainBinding, starbucksMenuDTO: StarbucksMenuDTO, holder: ViewHolder) {
+        binding.cardviewRecyclerviewMainItem.setOnClickListener {
+            val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
+            intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
+            intent.putExtra("productCD", starbucksMenuDTO.product_CD)
+
+            if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
+                intent.putExtra("favoriteIsChecked", true)
+            } else {
+                intent.putExtra("favoriteIsChecked", false)
+            }
+
+            (context as MainActivity).startForResult.launch(intent)
+            selectedItemPosition = holder.adapterPosition
+        }
+    }
+
+    private fun setFavoriteImage(binding: ItemRecyclerviewMainBinding, starbucksMenuDTO: StarbucksMenuDTO) {
+        val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
+        if (favorite == null) {
+            binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
+        } else if (favorite == 0) {
+            binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
+        }
+    }
+
 //    private fun filterCaffeine() {
 //        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
 //        for (i in 0 until filteredList.size) {
@@ -145,40 +174,26 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 executePendingBindings()
             }
         }
-
-        fun setMarquee() {
-            binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object : View.OnLongClickListener {
-                override fun onLongClick(p0: View?): Boolean {
-                    binding.textviewRecyclerviewMainItemProductName.isSelected = true
-                    return true
-                }
-            })
+        fun getBinding(): ItemRecyclerviewMainBinding {
+            return binding
         }
+    }
+}
 
-        fun setItemClickListener(starbucksMenuDTO: StarbucksMenuDTO) {
-            binding.cardviewRecyclerviewMainItem.setOnClickListener {
-                val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
-                intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
-                intent.putExtra("productCD", starbucksMenuDTO.product_CD)
+class RecyclerviewMainDiffUtil(
+    private val oldList: ArrayList<StarbucksMenuDTO>,
+    private val currentList: ArrayList<StarbucksMenuDTO>
+) :
+    DiffUtil.Callback() {
+    override fun getOldListSize(): Int = oldList.size
 
-                if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
-                    intent.putExtra("favoriteIsChecked", true)
-                } else {
-                    intent.putExtra("favoriteIsChecked", false)
-                }
+    override fun getNewListSize(): Int = currentList.size
 
-                (context as MainActivity).startForResult.launch(intent)
-                selectedItemPosition = adapterPosition
-            }
-        }
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].product_CD == currentList[newItemPosition].product_CD
+    }
 
-        fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
-            val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
-            if (favorite == null) {
-                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
-            } else if (favorite == 0) {
-                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
-            }
-        }
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == currentList[newItemPosition]
     }
 }
