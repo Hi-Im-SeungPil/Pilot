@@ -8,7 +8,7 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.repository.MainRepository
 
 
-class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "MainActivityViewModel"
     private val mainRepository = MainRepository(application.applicationContext)

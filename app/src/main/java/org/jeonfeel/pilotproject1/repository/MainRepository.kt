@@ -38,7 +38,7 @@ class MainRepository(context: Context) {
             }
             thread.start()
             try {
-                thread.join()
+                thread.join(3000)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

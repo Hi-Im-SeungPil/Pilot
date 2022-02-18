@@ -43,9 +43,9 @@ class RecyclerviewMainAdapter(private val context: Context) :
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
-        holder.setMarquee()
         holder.setItemClickListener(filteredList[position])
         holder.setFavoriteImage(filteredList[position])
+        holder.setMarquee()
     }
 
     override fun getItemCount(): Int = filteredList.size
@@ -147,8 +147,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
 
         fun setMarquee() {
-            binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object :
-                View.OnLongClickListener {
+            binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object : View.OnLongClickListener {
                 override fun onLongClick(p0: View?): Boolean {
                     binding.textviewRecyclerviewMainItemProductName.isSelected = true
                     return true

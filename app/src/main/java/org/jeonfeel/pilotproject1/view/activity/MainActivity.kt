@@ -1,7 +1,6 @@
 package org.jeonfeel.pilotproject1.view.activity
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -22,14 +21,14 @@ import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
-import org.jeonfeel.pilotproject1.viewmodel.MainActivityViewModel
+import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
-    private lateinit var mainActivityViewModel: MainActivityViewModel
+    private lateinit var mainActivityViewModel: MainViewModel
     private var favoriteHashMap = HashMap<String, Int>()
     lateinit var favoritesLiveData: LiveData<HashMap<String, Int>>
 
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
      * 옵저버
      */
     private fun initObserver() {
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         mainActivityViewModel.getStarbucksMenuLiveData().observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
