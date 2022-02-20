@@ -21,7 +21,6 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
     private var productCD: String = ""
     private var favoriteIsChecked = false
     private var favoriteIsClicked = false
-    private val db = AppDatabase.getDbInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +52,7 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
                 favoriteIsChecked = false
                 imgRes = R.drawable.img_favorite_unselected_2x
             }
-            with(binding) {
-                binding.resId = imgRes
-            }
+            binding.resId = imgRes
             favoriteIsClicked = true
         }
     }
@@ -77,11 +74,21 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         }
     }
 
+//    override fun onDestroy() {
+//        if (favoriteIsClicked) {
+//            val newIntent = Intent(this, MainActivity::class.java)
+//            newIntent.putExtra("productCD", productCD)
+//            newIntent.putExtra("favoriteIsSelected", favoriteIsChecked)
+//            setResult(RESULT_OK, newIntent)
+//        }
+//        super.onDestroy()
+//    }
+
     override fun onBackPressed() {
         if (favoriteIsClicked) {
             val newIntent = Intent(this, MainActivity::class.java)
             newIntent.putExtra("productCD", productCD)
-            newIntent.putExtra("favoriteIsSelected", favoriteIsChecked)
+            newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
             setResult(RESULT_OK, newIntent)
         }
         super.onBackPressed()
