@@ -15,9 +15,8 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 
 class StarbucksMenuDetailActivity : AppCompatActivity() {
 
-    val TAG = "StarbucksMenuDetailActivity"
+    val TAG = StarbucksMenuDetailActivity::class.java.simpleName
     lateinit var binding: ActivityStarbucksmenuDetailBinding
-    lateinit var starbucksMenuDTO: StarbucksMenuDTO
     private var productCD: String = ""
     private var favoriteIsChecked = false
     private var favoriteIsClicked = false
@@ -31,15 +30,13 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         initListener()
     }
 
+    /**
+     * 리스너
+     * */
     @Suppress("RedundantIf")
     private fun initListener() {
         binding.buttonDetailBackspace.setOnClickListener {
-            if (favoriteIsClicked) {
-                val newIntent = Intent(this, MainActivity::class.java)
-                newIntent.putExtra("productCD", productCD)
-                newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
-                setResult(RESULT_OK, newIntent)
-            }
+            setResult()
             finish()
         }
 
@@ -59,7 +56,7 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
 
     private fun getProductInfo() {
         val intent = this.intent
-        starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
+        val starbucksMenuDTO = intent.getSerializableExtra("starbucksMenuDTO") as StarbucksMenuDTO
         productCD = intent.getStringExtra("productCD").toString()
         favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
@@ -74,23 +71,17 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
         }
     }
 
-//    override fun onDestroy() {
-//        if (favoriteIsClicked) {
-//            val newIntent = Intent(this, MainActivity::class.java)
-//            newIntent.putExtra("productCD", productCD)
-//            newIntent.putExtra("favoriteIsSelected", favoriteIsChecked)
-//            setResult(RESULT_OK, newIntent)
-//        }
-//        super.onDestroy()
-//    }
+    private fun setResult() {
+        if (favoriteIsClicked) {
+            val resultIntent = Intent(this, MainActivity::class.java)
+            resultIntent.putExtra("productCD", productCD)
+            resultIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
+            setResult(RESULT_OK, resultIntent)
+        }
+    }
 
     override fun onBackPressed() {
-        if (favoriteIsClicked) {
-            val newIntent = Intent(this, MainActivity::class.java)
-            newIntent.putExtra("productCD", productCD)
-            newIntent.putExtra("favoriteIsChecked", favoriteIsChecked)
-            setResult(RESULT_OK, newIntent)
-        }
+        setResult()
         super.onBackPressed()
     }
 }

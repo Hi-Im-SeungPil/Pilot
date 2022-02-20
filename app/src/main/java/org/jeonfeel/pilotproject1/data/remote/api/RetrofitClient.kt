@@ -11,11 +11,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitClient {
     //return retrofit object
-    fun getRetrofitClient() : Retrofit{
-        val retrofit = Retrofit.Builder().
-        baseUrl("http://dpms.openobject.net:4002/").
-        addConverterFactory(GsonConverterFactory.create()).
-        build()
+    fun getRetrofitClient(): Retrofit {
+        val retrofit = Retrofit.Builder().baseUrl("http://dpms.openobject.net:4002/")
+            .addConverterFactory(GsonConverterFactory.create()).build()
 
         return retrofit
     }

@@ -14,110 +14,26 @@ import retrofit2.Call
 
 class MainRepository(context: Context) {
 
+    private val TAG = MainRepository::class.java.simpleName
     private val retrofit = RetrofitClient().getRetrofitClient()
     private val service = retrofit.create(RetrofitService::class.java)
-    private val call: Call<JsonObject> = service.getStarbucksMenu()
     private val db = AppDatabase.getDbInstance(context)
 
-    private var starbucksMenuJsonObject: JsonObject? = null
-    private lateinit var categoryList: List<String>
-    private var favoriteHashMap: HashMap<String, Int> = hashMapOf()
-
-    fun getStarbucksMenuList(): ArrayList<StarbucksMenuDTO> {
-        var starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-        if (starbucksMenuJsonObject == null) {
-            val thread = Thread {
-                try {
-                    starbucksMenuJsonObject = call.execute().body()!!
-                    Log.d(TAG, starbucksMenuJsonObject.toString())
-                    categoryList = starbucksMenuJsonObject?.keySet()?.toList()!!
-                    starbucksMenuDTOs = getStarbucksMenuResource()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-            thread.start()
-            try {
-                thread.join()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        return starbucksMenuDTOs
+    fun getStarbucksMenuList(): Call<JsonObject> {
+        return service.getStarbucksMenu()
     }
 
-    fun getStarbucksMenuResource(categoryPosition: Int = -1): ArrayList<StarbucksMenuDTO> {
-        val gson = Gson()
-        val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-        if (categoryPosition == -1) {
-            for (element in categoryList) {
-                val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
-                val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
-
-                for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-                    Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
-                    val sampleItem =
-                        gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
-                    starbucksMenuDTOs.add(sampleItem)
-                }
-            }
-        } else {
-            val categoryJsonObject =
-                starbucksMenuJsonObject?.getAsJsonObject(categoryList[categoryPosition])
-            val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
-
-            for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-                Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
-                val sampleItem =
-                    gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
-                starbucksMenuDTOs.add(sampleItem)
-            }
-        }
-        return starbucksMenuDTOs
-    }
-
-    fun getCategoryList(): List<String> {
-
-        return categoryList
-    }
-
-    fun updateStarbucksMenu(position: Int): ArrayList<StarbucksMenuDTO> {
-        return getStarbucksMenuResource(position)
-    }
-
-    fun getFavorites(): HashMap<String,Int> {
-        val thread = Thread {
-            try {
-                val favoriteList = db.favoriteDao().selectAll()
-                for (element in favoriteList) {
-                    favoriteHashMap[element.productCD] = 0
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        thread.start()
-        try {
-            thread.join()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return favoriteHashMap
+    fun getFavorites(): List<Favorite> {
+        return db.favoriteDao().selectAll()
     }
 
     fun insertFavorite(productCD: String) {
         val favorite = Favorite(productCD)
-        val thread = Thread {
-            db.favoriteDao().insert(favorite)
-        }
-        thread.start()
+        db.favoriteDao().insert(favorite)
     }
 
     fun deleteFavorite(productCD: String) {
         val favorite = Favorite(productCD)
-        val thread = Thread {
-            db.favoriteDao().delete(favorite)
-        }
-        thread.start()
+        db.favoriteDao().delete(favorite)
     }
 }

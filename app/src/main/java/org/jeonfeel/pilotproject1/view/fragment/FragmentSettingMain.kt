@@ -1,6 +1,7 @@
 package org.jeonfeel.pilotproject1.view.fragment
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,9 @@ import androidx.fragment.app.Fragment
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
 import org.jeonfeel.pilotproject1.view.activity.MainActivity
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
+import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain.TestListener as TestListener
 
+// SharedPreference 사용해서 상태정보 저장.
 class FragmentSettingMain : Fragment() {
 
     private var _binding: FragmentSettingMainBinding? = null
@@ -30,28 +33,31 @@ class FragmentSettingMain : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingMainBinding.inflate(inflater, container, false)
-        binding?.radiogroupFragmentSettingMainNormal?.isChecked = true
+
         initListener()
 
         return _binding?.root
     }
 
+    /**
+     * 리스너
+     * */
     private fun initListener() {
         binding?.buttonFragmentSettingMainClose?.setOnClickListener {
             fragmentFinish()
         }
 
         binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
-            adapter?.updateSetting(sortInfo,0)
+            adapter?.updateSetting(sortInfo, 0)
             fragmentFinish()
         }
 
-        binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener{ radioGroup: RadioGroup, i: Int ->
+        binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener { radioGroup: RadioGroup, i: Int ->
             val SORT_ROW_KCAL = -1
             val SORT_HIGH_KCAL = 1
             val SORT_BASIC = 0
             when (radioGroup.checkedRadioButtonId) {
-                binding?.radiogroupFragmentSettingMainRowkcal?.id -> sortInfo = SORT_ROW_KCAL
+                binding?.radiogroupFragmentSettingMainLowkcal?.id -> sortInfo = SORT_ROW_KCAL
                 binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo = SORT_HIGH_KCAL
             }
         }
@@ -62,7 +68,9 @@ class FragmentSettingMain : Fragment() {
     }
 
     fun fragmentFinish() {
-        (activity as MainActivity?)!!.frameLayoutGone()
+        val test = activity as TestListener
+//        (activity as MainActivity?)!!.frameLayoutGone()
+        test.frameLayoutGone()
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.remove(this)
@@ -76,7 +84,7 @@ class FragmentSettingMain : Fragment() {
                 fragmentFinish()
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(this,backPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(this, backPressedCallback)
     }
 
     override fun onDestroy() {
@@ -93,4 +101,8 @@ class FragmentSettingMain : Fragment() {
                 }
             }
     }
+    interface TestListener {
+        fun frameLayoutGone()
+    }
 }
+

@@ -1,7 +1,6 @@
 package org.jeonfeel.pilotproject1.view.activity
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -11,30 +10,24 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.data.database.AppDatabase
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
-import org.jeonfeel.pilotproject1.viewmodel.MainActivityViewModel
+import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentSettingMain.TestListener {
 
-    private val TAG = "MainActivity"
+    private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
-    private lateinit var mainActivityViewModel: MainActivityViewModel
-    private var favoriteHashMap = HashMap<String, Int>()
-    lateinit var favoritesLiveData: MutableLiveData<HashMap<String, Int>>
-    private lateinit var db: AppDatabase
+    private lateinit var mainActivityViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +41,6 @@ class MainActivity : AppCompatActivity() {
      * 액티비티 초기화
      */
     private fun initActivity() {
-        db = AppDatabase.getDbInstance(this@MainActivity)
         initObserver()
         initRecyclerViewMain()
         initListener()
@@ -59,17 +51,14 @@ class MainActivity : AppCompatActivity() {
      * 옵저버
      */
     private fun initObserver() {
-        mainActivityViewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        mainActivityViewModel.getStarbucksMenuLiveData().observe(this, Observer {
+        mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
         })
 
-        favoritesLiveData = mainActivityViewModel.getFavoriteLiveData()
-        favoriteHashMap = favoritesLiveData.value!!
-
-        favoritesLiveData.observe(this, Observer {
-            recyclerviewMainAdapter.updateFavoriteImage()
+        mainActivityViewModel.favoriteLiveData.observe(this, Observer {
+            recyclerviewMainAdapter.updateFavoriteImage(it)
         })
     }
 
@@ -128,7 +117,6 @@ class MainActivity : AppCompatActivity() {
         val gridLayoutManager = GridLayoutManagerWrap(this, 2)
         binding.RecyclerviewMain.layoutManager = gridLayoutManager
         recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
-        recyclerviewMainAdapter.setFavoriteHashMap(favoriteHashMap)
         binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
     }
 
@@ -141,10 +129,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addTabLayoutCategory() {
-        val categoryList = mainActivityViewModel.getCategoryList()
-        for (i in categoryList.indices) {
+        val category = mainActivityViewModel.getCategoryList()
+        for (i in category!!.indices) {
             val tabItem = binding.tablayoutMain.newTab()
-            tabItem.text = categoryList[i]
+            tabItem.text = category[i]
             binding.tablayoutMain.addTab(tabItem)
         }
     }
@@ -153,12 +141,8 @@ class MainActivity : AppCompatActivity() {
         return binding.edittextSearchMain.text.toString()
     }
 
-    fun frameLayoutGone() {
-        val animation =
-            AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
-        binding.framelayoutSettingMain.animation = animation
-
-        binding.framelayoutSettingMain.visibility = View.GONE
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 
     val startForResult =
@@ -169,19 +153,15 @@ class MainActivity : AppCompatActivity() {
                 val productCD: String = intent!!.getStringExtra("productCD").toString()
                 val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
-                if (favoriteIsChecked && favoriteHashMap[productCD] == null) {
-                    mainActivityViewModel.insertFavorite(productCD)
-                    favoriteHashMap[productCD] = 0
-                    favoritesLiveData.value = favoriteHashMap
-                } else if (!favoriteIsChecked && favoriteHashMap[productCD] != null) {
-                    mainActivityViewModel.deleteFavorite(productCD)
-                    favoriteHashMap.remove(productCD)
-                    favoritesLiveData.value = favoriteHashMap
-                }
+                mainActivityViewModel.checkFavorite(productCD, favoriteIsChecked)
             }
         }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun frameLayoutGone() {
+        val animation =
+            AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
+        binding.framelayoutSettingMain.animation = animation
+
+        binding.framelayoutSettingMain.visibility = View.GONE
     }
 }

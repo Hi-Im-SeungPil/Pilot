@@ -4,9 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="starbucks_menu_dto"
             type="org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO" />
+
         <variable
             name="resId"
             type="Integer" />
@@ -18,9 +20,10 @@
 
         <ImageView
             android:id="@+id/imageview_detail"
+            coffeeImage="@{starbucks_menu_dto.file_PATH}"
             android:layout_width="match_parent"
             android:layout_height="340dp"
-            coffeeImage="@{starbucks_menu_dto.file_PATH}"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -35,11 +38,11 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_detail_favorite"
+            loadSrc="@{resId}"
             android:layout_width="31dp"
             android:layout_height="31dp"
             android:layout_marginTop="29dp"
             android:layout_marginRight="26dp"
-            loadSrc="@{resId}"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,8 +96,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="31dp"
                     android:layout_marginTop="11dp"
-                    android:textSize="20sp"
-                    android:text="@{@string/recyclerview_main_item_kcal(starbucks_menu_dto.kcal)}"/>
+                    android:text="@{@string/recyclerview_main_item_kcal(starbucks_menu_dto.kcal)}"
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
