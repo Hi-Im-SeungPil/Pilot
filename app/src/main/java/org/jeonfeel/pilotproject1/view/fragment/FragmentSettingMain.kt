@@ -10,9 +10,7 @@ import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
-import org.jeonfeel.pilotproject1.view.activity.MainActivity
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
-import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain.TestListener as TestListener
 
 // SharedPreference 사용해서 상태정보 저장.
 class FragmentSettingMain : Fragment() {
@@ -68,8 +66,7 @@ class FragmentSettingMain : Fragment() {
     }
 
     fun fragmentFinish() {
-        val test = activity as TestListener
-//        (activity as MainActivity?)!!.frameLayoutGone()
+        val test = activity as FragmentSettingListener
         test.frameLayoutGone()
         activity?.supportFragmentManager
             ?.beginTransaction()
@@ -101,7 +98,8 @@ class FragmentSettingMain : Fragment() {
                 }
             }
     }
-    interface TestListener {
+
+    interface FragmentSettingListener {
         fun frameLayoutGone()
     }
 }

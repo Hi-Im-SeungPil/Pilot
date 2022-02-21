@@ -19,21 +19,19 @@ class MainRepository(context: Context) {
     private val service = retrofit.create(RetrofitService::class.java)
     private val db = AppDatabase.getDbInstance(context)
 
-    fun getStarbucksMenuList(): Call<JsonObject> {
+    suspend fun getStarbucksMenuList(): Call<JsonObject> {
         return service.getStarbucksMenu()
     }
 
-    fun getFavorites(): List<Favorite> {
-        return db.favoriteDao().selectAll()
-    }
+    suspend fun getFavoritesInstance() = db.favoriteDao()
 
-    fun insertFavorite(productCD: String) {
-        val favorite = Favorite(productCD)
-        db.favoriteDao().insert(favorite)
-    }
-
-    fun deleteFavorite(productCD: String) {
-        val favorite = Favorite(productCD)
-        db.favoriteDao().delete(favorite)
-    }
+//    fun insertFavorite(productCD: String) {
+//        val favorite = Favorite(productCD)
+//        db.favoriteDao().insert(favorite)
+//    }
+//
+//    fun deleteFavorite(productCD: String) {
+//        val favorite = Favorite(productCD)
+//        db.favoriteDao().delete(favorite)
+//    }
 }

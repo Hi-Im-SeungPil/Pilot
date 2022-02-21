@@ -3,6 +3,7 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,10 +47,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
-    }
-
-    fun setFavoriteHashMap() {
-
     }
 
     fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
@@ -120,15 +117,17 @@ class RecyclerviewMainAdapter(private val context: Context) :
     }
 
     private fun setMarquee(binding: ItemRecyclerviewMainBinding) {
-        binding.cardviewRecyclerviewMainItem.setOnLongClickListener(object : View.OnLongClickListener {
-            override fun onLongClick(p0: View?): Boolean {
-                binding.textviewRecyclerviewMainItemProductName.isSelected = true
-                return true
-            }
-        })
+        binding.cardviewRecyclerviewMainItem.setOnLongClickListener {
+            binding.textviewRecyclerviewMainItemProductName.isSelected = true
+            true
+        }
     }
 
-    private fun setItemClickListener(binding: ItemRecyclerviewMainBinding, starbucksMenuDTO: StarbucksMenuDTO, holder: ViewHolder) {
+    private fun setItemClickListener(
+        binding: ItemRecyclerviewMainBinding,
+        starbucksMenuDTO: StarbucksMenuDTO,
+        holder: ViewHolder
+    ) {
         binding.cardviewRecyclerviewMainItem.setOnClickListener {
             val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
             intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
@@ -139,13 +138,17 @@ class RecyclerviewMainAdapter(private val context: Context) :
             } else {
                 intent.putExtra("favoriteIsChecked", false)
             }
-            (context as MainActivity).startForResult.launch(intent)
+            (context as RecyclerViewMainListener).startForActivityResult(intent)
             selectedItemPosition = holder.adapterPosition
         }
     }
 
-    private fun setFavoriteImage(binding: ItemRecyclerviewMainBinding, starbucksMenuDTO: StarbucksMenuDTO) {
+    private fun setFavoriteImage(
+        binding: ItemRecyclerviewMainBinding,
+        starbucksMenuDTO: StarbucksMenuDTO
+    ) {
         val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
+        Log.d(TAG, favoriteHashMap.toString())
         if (favorite == null) {
             binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
         } else if (favorite == 0) {
@@ -174,10 +177,15 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 executePendingBindings()
             }
         }
+
         fun getBinding(): ItemRecyclerviewMainBinding {
             return binding
         }
     }
+}
+
+interface RecyclerViewMainListener {
+    fun startForActivityResult(intent: Intent)
 }
 
 class RecyclerviewMainDiffUtil(

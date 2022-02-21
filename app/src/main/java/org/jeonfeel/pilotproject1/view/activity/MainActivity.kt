@@ -1,6 +1,7 @@
 package org.jeonfeel.pilotproject1.view.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -15,14 +16,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.CoroutineScope
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
 import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity(), FragmentSettingMain.TestListener {
+class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingListener,
+    RecyclerViewMainListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
@@ -51,7 +55,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.TestListener {
      * 옵저버
      */
     private fun initObserver() {
-        mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
@@ -106,11 +110,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.TestListener {
                 .commit()
         }
 
-        binding.framelayoutSettingMain.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
-                return true
-            }
-        })
+        binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
     }
 
     private fun initRecyclerViewMain() {
@@ -163,5 +163,9 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.TestListener {
         binding.framelayoutSettingMain.animation = animation
 
         binding.framelayoutSettingMain.visibility = View.GONE
+    }
+
+    override fun startForActivityResult(intent: Intent) {
+        startForResult.launch(intent)
     }
 }
