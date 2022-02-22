@@ -120,8 +120,10 @@ class RecyclerviewMainAdapter(private val context: Context) :
             }
 
             @SuppressLint("NotifyDataSetChanged")
+            @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
+                Log.d(TAG,filteredList.toString())
                 notifyDataSetChanged()
             }
         }

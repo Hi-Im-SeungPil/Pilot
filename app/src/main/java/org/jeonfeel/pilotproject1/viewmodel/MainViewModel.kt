@@ -24,30 +24,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var recyclerViewMainList: ArrayList<StarbucksMenuDTO>? = null
     private var favorites: HashMap<String, Int>? = null
 
-    private val _starbucksMenuLiveData: MutableLiveData<ArrayList<StarbucksMenuDTO>> by lazy {
+    private val _starbucksMenuLiveData: MutableLiveData<ArrayList<StarbucksMenuDTO>> =
         MutableLiveData<ArrayList<StarbucksMenuDTO>>()
-    }
     val starbucksMenuLiveData: LiveData<ArrayList<StarbucksMenuDTO>> get() = _starbucksMenuLiveData
 
-    private val _favoriteLiveData: MutableLiveData<HashMap<String, Int>> by lazy {
+    private val _favoriteLiveData: MutableLiveData<HashMap<String, Int>> =
         MutableLiveData<HashMap<String, Int>>()
-    }
     val favoriteLiveData: LiveData<HashMap<String, Int>> get() = _favoriteLiveData
 
-    private val _categoryLiveData: MutableLiveData<List<String>> by lazy {
-        MutableLiveData<List<String>>()
-    }
+    private val _categoryLiveData: MutableLiveData<List<String>> = MutableLiveData<List<String>>()
     val categoryLiveData: LiveData<List<String>> get() = _categoryLiveData
 
     fun loadData() {
-        getStarbucksMenuJsonObj()
-        getFavorites()
+        viewModelScope.launch(Dispatchers.IO) {
+            getStarbucksMenuJsonObj()
+            getCategoryList()
+            getStarbucksMenu()
+            getFavorites()
+        }
     }
 
     /**
      * 카테고리
      * */
-    fun getCategoryList() = categoryList
+    fun getCategory() = categoryList
+
+    private fun getCategoryList() {
+        categoryList = starbucksMenuJsonObject?.keySet()?.toList()
+        _categoryLiveData.postValue(categoryList)
+    }
 
     /**
      * 스타벅스 메뉴
@@ -57,22 +62,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getStarbucksMenu(position)
     }
 
-    private fun getStarbucksMenuJsonObj() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = mainRepository.getStarbucksMenuListCall().execute()
-            if (response.isSuccessful) {
-                starbucksMenuJsonObject = response.body()!!
-                getStarbucksMenu()
-            } else {
-                // TODO:
-            }
+    private suspend fun getStarbucksMenuJsonObj() {
+        val response = mainRepository.getStarbucksMenuListCall().execute()
+        if (response.isSuccessful) {
+            starbucksMenuJsonObject = response.body()!!
+        } else {
+            // TODO:
         }
     }
 
     private fun getStarbucksMenu(categoryPosition: Int = -1) {
         val gson = Gson()
         val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>() //category setting
-        categoryList = starbucksMenuJsonObject?.keySet()?.toList()
         if (categoryPosition == -1) {
             for (element in categoryList!!) {
                 val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
@@ -85,8 +86,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     starbucksMenuDTOs.add(sampleItem)
                 }
             }
-            recyclerViewMainList = starbucksMenuDTOs
-        } else if (categoryPosition != -1) {
+        } else {
             val categoryJsonObject =
                 starbucksMenuJsonObject?.getAsJsonObject(categoryList?.get(categoryPosition))
             val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
@@ -97,11 +97,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
                 starbucksMenuDTOs.add(sampleItem)
             }
-            recyclerViewMainList = starbucksMenuDTOs
         }
+        recyclerViewMainList = starbucksMenuDTOs
         _starbucksMenuLiveData.postValue(recyclerViewMainList)
-        _categoryLiveData.postValue(categoryList)
-
     }
 
     /**
@@ -109,13 +107,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     private suspend fun getFavorites() {
         val favoritesHashMap = HashMap<String, Int>()
-        val job = viewModelScope.launch(Dispatchers.IO) {
-            val favoriteList = mainRepository.getFavoritesInstance().selectAll()
-            for (elements in favoriteList) {
-                favoritesHashMap[elements.productCD] = 0
-            }
-            favorites = favoritesHashMap
+        val favoriteList = mainRepository.getFavoritesInstance().selectAll()
+        for (elements in favoriteList) {
+            favoritesHashMap[elements.productCD] = 0
         }
+        favorites = favoritesHashMap
+        _favoriteLiveData.postValue(favorites)
     }
 
     fun checkFavorite(productCD: String, favoriteIsChecked: Boolean) {

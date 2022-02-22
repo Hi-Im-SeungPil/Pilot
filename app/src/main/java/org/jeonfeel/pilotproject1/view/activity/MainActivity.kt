@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.activity.result.ActivityResult
@@ -16,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.CoroutineScope
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
@@ -60,6 +58,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             recyclerviewMainAdapter.setRecyclerViewMainItem(it)
+            filteringRecyclerviewItem()
         })
 
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
@@ -79,7 +78,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
-                filteringRecyclerviewItem()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -134,7 +132,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     }
 
     private fun addTabLayoutCategory() {
-        val category = mainActivityViewModel.getCategoryList()
+        val category = mainActivityViewModel.getCategory()
         for (i in category!!.indices) {
             val tabItem = binding.tablayoutMain.newTab()
             tabItem.text = category[i]
