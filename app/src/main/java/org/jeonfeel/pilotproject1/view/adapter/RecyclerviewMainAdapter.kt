@@ -34,7 +34,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
         return ViewHolder(binding)
     }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
@@ -63,20 +62,32 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
     fun updateSetting(sortInfo: Int, caffeineCheck: Int) {
         if (sortInfo != 0) {
-//            filterCaffeine()
+            val oldList = arrayListOf<StarbucksMenuDTO>()
+            oldList.addAll(filteredList)
             when (sortInfo) {
                 -1 -> filteredList.sortBy { it.kcal.toInt() }
                 1 -> filteredList.sortByDescending { it.kcal.toInt() }
             }
-            notifyItemRangeChanged(0, filteredList.size)
+            if(caffeineCheck == 1){
+                filterCaffeine()
+            }
+            val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList,filteredList))
+            diffResult.dispatchUpdatesTo(this)
         } else {
+            val oldList = arrayListOf<StarbucksMenuDTO>()
+            oldList.addAll(filteredList)
+
             filteredList.clear()
             filteredList.addAll(copyMainItem)
+            if(caffeineCheck == 1){
+                filterCaffeine()
+            }
             val currentText = (context as MainActivity).getCurrentText()
             if (currentText.trim().isNotEmpty()) {
                 filter.filter(currentText)
             } else {
-                notifyItemRangeChanged(0, itemCount)
+                val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList,filteredList))
+                diffResult.dispatchUpdatesTo(this)
             }
         }
     }
@@ -156,16 +167,16 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-//    private fun filterCaffeine() {
-//        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-//        for (i in 0 until filteredList.size) {
-//            if (filteredList[i].caffeine.toInt() == 0) {
-//                filteredCaffeineList.add(filteredList[i])
-//            }
-//        }
-//        filteredList.clear()
-//        filteredList.addAll(filteredCaffeineList)
-//    }
+    private fun filterCaffeine() {
+        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
+        for (i in 0 until filteredList.size) {
+            if (filteredList[i].caffeine.toInt() == 0) {
+                filteredCaffeineList.add(filteredList[i])
+            }
+        }
+        filteredList.clear()
+        filteredList.addAll(filteredCaffeineList)
+    }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
         RecyclerView.ViewHolder(binding.root) {

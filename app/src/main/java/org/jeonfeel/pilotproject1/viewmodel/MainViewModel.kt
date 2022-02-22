@@ -12,27 +12,36 @@ import kotlinx.coroutines.*
 import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.repository.MainRepository
-import retrofit2.Response
+
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val TAG = "MainActivityViewModel"
     private val mainRepository = MainRepository(application.applicationContext)
 
-    private var starbucksMenuJsonObject = JsonObject()
-    private var recyclerViewMainList = ArrayList<StarbucksMenuDTO>()
-    private var categoryList = listOf<String>()
-    private var favorites = HashMap<String, Int>()
+    private var starbucksMenuJsonObject: JsonObject? = null
+    private var categoryList: List<String>? = null
+    private var recyclerViewMainList: ArrayList<StarbucksMenuDTO>? = null
+    private var favorites: HashMap<String, Int>? = null
 
-    private val _starbucksMenuLiveData = MutableLiveData<ArrayList<StarbucksMenuDTO>>()
-    private val _favoriteLiveData = MutableLiveData<HashMap<String, Int>>()
-    val starbucksMenuLiveData: LiveData<ArrayList<StarbucksMenuDTO>>
-        get() = _starbucksMenuLiveData
-    val favoriteLiveData: LiveData<HashMap<String, Int>>
-        get() = _favoriteLiveData
+    private val _starbucksMenuLiveData: MutableLiveData<ArrayList<StarbucksMenuDTO>> by lazy {
+        MutableLiveData<ArrayList<StarbucksMenuDTO>>()
+    }
+    val starbucksMenuLiveData: LiveData<ArrayList<StarbucksMenuDTO>> get() = _starbucksMenuLiveData
 
-    init {
+    private val _favoriteLiveData: MutableLiveData<HashMap<String, Int>> by lazy {
+        MutableLiveData<HashMap<String, Int>>()
+    }
+    val favoriteLiveData: LiveData<HashMap<String, Int>> get() = _favoriteLiveData
+
+    private val _categoryLiveData: MutableLiveData<List<String>> by lazy {
+        MutableLiveData<List<String>>()
+    }
+    val categoryLiveData: LiveData<List<String>> get() = _categoryLiveData
+
+    fun loadData() {
         getStarbucksMenuJsonObj()
+        getFavorites()
     }
 
     /**
@@ -43,28 +52,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 스타벅스 메뉴
      * */
-    fun updateStarbucksMenu(position: Int) {
+    fun updateStarbucksMenu(position: Int = -1) {
         _starbucksMenuLiveData.value?.clear()
-        _starbucksMenuLiveData.value = getStarbucksMenu(position)
+        getStarbucksMenu(position)
     }
 
     private fun getStarbucksMenuJsonObj() {
-        var jsonObj = JsonObject()
-        val job = viewModelScope.async(Dispatchers.IO) {
-            val response = mainRepository.getStarbucksMenuList().execute()
-            jsonObj = response.body()!!
-        }
-        if (job.isCompleted) {
-            starbucksMenuJsonObject = jsonObj
-            categoryList = jsonObj.keySet().toList()
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = mainRepository.getStarbucksMenuListCall().execute()
+            if (response.isSuccessful) {
+                starbucksMenuJsonObject = response.body()!!
+                getStarbucksMenu()
+            } else {
+                // TODO:
+            }
         }
     }
 
-    private fun getStarbucksMenu(categoryPosition: Int = -1): ArrayList<StarbucksMenuDTO> {
+    private fun getStarbucksMenu(categoryPosition: Int = -1) {
         val gson = Gson()
-        val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-        if (categoryPosition == -1 && categoryList != null) {
-            for (element in categoryList) {
+        val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>() //category setting
+        categoryList = starbucksMenuJsonObject?.keySet()?.toList()
+        if (categoryPosition == -1) {
+            for (element in categoryList!!) {
                 val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
                 val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
@@ -75,9 +85,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     starbucksMenuDTOs.add(sampleItem)
                 }
             }
-        } else if (categoryPosition != -1 && categoryList != null) {
+            recyclerViewMainList = starbucksMenuDTOs
+        } else if (categoryPosition != -1) {
             val categoryJsonObject =
-                starbucksMenuJsonObject?.getAsJsonObject(categoryList[categoryPosition])
+                starbucksMenuJsonObject?.getAsJsonObject(categoryList?.get(categoryPosition))
             val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
             for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
@@ -86,23 +97,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
                 starbucksMenuDTOs.add(sampleItem)
             }
+            recyclerViewMainList = starbucksMenuDTOs
         }
-        return starbucksMenuDTOs
+        _starbucksMenuLiveData.postValue(recyclerViewMainList)
+        _categoryLiveData.postValue(categoryList)
+
     }
 
     /**
      * 즐겨찾기
      * */
-    private fun getFavorites() {
+    private suspend fun getFavorites() {
         val favoritesHashMap = HashMap<String, Int>()
-        var favoriteList = listOf<Favorite>()
-
-        val job = viewModelScope.async(Dispatchers.IO) {
-            favoriteList = mainRepository.getFavoritesInstance().selectAll()
-            Log.d(TAG, favoriteList.toString())
+        val job = viewModelScope.launch(Dispatchers.IO) {
+            val favoriteList = mainRepository.getFavoritesInstance().selectAll()
             for (elements in favoriteList) {
                 favoritesHashMap[elements.productCD] = 0
             }
+            favorites = favoritesHashMap
         }
     }
 

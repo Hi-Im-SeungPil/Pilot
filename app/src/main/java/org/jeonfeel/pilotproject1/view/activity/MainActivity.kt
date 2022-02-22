@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         initObserver()
         initRecyclerViewMain()
         initListener()
-        addTabLayoutCategory()
+
+        mainActivityViewModel.loadData()
     }
 
     /**
@@ -63,6 +64,10 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
             recyclerviewMainAdapter.updateFavoriteImage(it)
+        })
+
+        mainActivityViewModel.categoryLiveData.observe(this, Observer {
+            addTabLayoutCategory()
         })
     }
 
@@ -145,7 +150,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         super.onBackPressed()
     }
 
-    val startForResult =
+    private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             Log.d(TAG, result.resultCode.toString())
             if (result.resultCode == RESULT_OK) {

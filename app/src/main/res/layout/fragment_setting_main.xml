@@ -94,62 +94,91 @@
         android:id="@+id/linear_rangeSlider_protein"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/radiogroup_fragment_setting_main">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="단백질" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/seekbar_protein"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_slider_protein_low"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="~"/>
+            <TextView
+                android:id="@+id/tv_slider_protein_high"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="최대"/>
+        </LinearLayout>
+
+
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/slider_protein"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:valueFrom="0"
-            android:valueTo="100" />
+            android:valueTo="1000"
+            app:values="@array/initial_slider_values" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linear_rangeSlider_fat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_protein">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="지방" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/seekbar_fat"
-            android:layout_width="0dp"
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/slider_fat"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:valueFrom="0"
+            android:valueTo="1000"
+            app:values="@array/initial_slider_values" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linear_rangeSlider_sugar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_fat">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="설탕" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/seekbar_sugar"
-            android:layout_width="0dp"
+        <com.google.android.material.slider.RangeSlider
+            android:id="@+id/slider_sugar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:valueFrom="0"
+            android:valueTo="1000"
+            app:values="@array/initial_slider_values" />
     </LinearLayout>
 
     <LinearLayout
