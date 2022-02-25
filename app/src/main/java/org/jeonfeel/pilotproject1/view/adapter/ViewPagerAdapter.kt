@@ -8,10 +8,10 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.Viewpager2ItemBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
 
-class ViewPagerAdapter(private val context: Context) :
+class ViewPagerAdapter(private val context: Context,private val itemCount: Int) :
     RecyclerView.Adapter<ViewPagerAdapter.CustomViewHolder>() {
 
-    private lateinit var recyclerviewMainAdapter: RecyclerviewMainAdapter
+    private val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.CustomViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -25,7 +25,11 @@ class ViewPagerAdapter(private val context: Context) :
     }
 
     override fun getItemCount(): Int {
-        return 9
+        return itemCount
+    }
+
+    fun search(str: String) {
+        recyclerviewMainAdapter.filter.filter(str)
     }
 
     fun setMainItem(array: ArrayList<StarbucksMenuDTO>) {
@@ -41,7 +45,6 @@ class ViewPagerAdapter(private val context: Context) :
             fun itemInit() {
                 val gridLayoutManager = GridLayoutManagerWrap(context, 2)
                 binding.RecyclerviewMain.layoutManager = gridLayoutManager
-                recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
                 binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
             }
     }

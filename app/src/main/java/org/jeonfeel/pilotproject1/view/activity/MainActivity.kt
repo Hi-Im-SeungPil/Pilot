@@ -18,9 +18,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
-import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.utils.MyFirebaseMessagingService
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
-import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
 import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
@@ -46,8 +45,8 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
      */
     private fun initActivity() {
         initObserver()
-        initRecyclerViewMain()
         initListener()
+        MyFirebaseMessagingService()
 
         mainActivityViewModel.loadData()
     }
@@ -68,7 +67,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         })
 
         mainActivityViewModel.categoryLiveData.observe(this, Observer {
-//            addTabLayoutCategory()
+            initViewPager(it.size)
             TabLayoutMediator(binding.tablayoutMain,binding.viewPager2) { tab, position ->
                 if(position == 0) {
                     tab.text = "All"
@@ -87,6 +86,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
+                filteringRecyclerviewItem()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
 
             override fun onTextChanged(str: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                recyclerviewMainAdapter.filter.filter(str.toString())
+                viewPagerAdapter.search(str.toString())
             }
 
             override fun afterTextChanged(str: Editable?) {
@@ -125,30 +125,21 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
     }
 
-    private fun initRecyclerViewMain() {
-//        val gridLayoutManager = GridLayoutManagerWrap(this, 2)
-//        binding.RecyclerviewMain.layoutManager = gridLayoutManager
-//        recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
-//        binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
-        viewPagerAdapter = ViewPagerAdapter(this)
+    private fun initViewPager(itemCount: Int) {
+        viewPagerAdapter = ViewPagerAdapter(this,itemCount)
         binding.viewPager2.adapter = viewPagerAdapter
     }
 
     private fun filteringRecyclerviewItem() {
         if (binding.edittextSearchMain.length() != 0) {
             val currentString = binding.edittextSearchMain.text.toString()
-//            recyclerviewMainAdapter.filter.filter(currentString)
+            viewPagerAdapter.search(currentString)
         }
-//        binding.RecyclerviewMain.scrollToPosition(0)
     }
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
-//        for (i in category!!.indices) {
-//            val tabItem = binding.tablayoutMain.newTab()
-            tab.text = category!![position]
-//            binding.tablayoutMain.addTab(tabItem)
-//        }
+        tab.text = category!![position]
     }
 
     fun getCurrentText(): String {

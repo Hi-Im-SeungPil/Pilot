@@ -55,7 +55,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/edittext_search_main"
         app:layout_constraintTop_toTopOf="@+id/edittext_search_main" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_adjust"
         android:layout_width="51dp"
         android:layout_height="53dp"
