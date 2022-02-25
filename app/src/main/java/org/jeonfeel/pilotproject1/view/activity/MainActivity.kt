@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.jeonfeel.pilotproject1.R
+import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.utils.MyFirebaseMessagingService
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             viewPagerAdapter.setMainItem(it)
+            if(Shared.getCaffeine(this@MainActivity) != -1){
+                viewPagerAdapter.filterCaffeine(Shared.getCaffeine(this@MainActivity))
+            }
+            Log.d(TAG,"getCaffeine : ${Shared.getCaffeine(this@MainActivity)}")
             filteringRecyclerviewItem()
         })
 

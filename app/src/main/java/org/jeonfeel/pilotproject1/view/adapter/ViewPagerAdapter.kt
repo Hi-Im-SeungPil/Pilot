@@ -40,6 +40,10 @@ class ViewPagerAdapter(private val context: Context,private val itemCount: Int) 
         recyclerviewMainAdapter.updateFavoriteImage(hash)
     }
 
+    fun filterCaffeine(isCaffeine: Int) {
+        recyclerviewMainAdapter.filterCaffeine(isCaffeine)
+    }
+
     inner class CustomViewHolder(private val binding: Viewpager2ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
             fun itemInit() {

@@ -70,7 +70,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 1 -> filteredList.sortByDescending { it.kcal.toInt() }
             }
             if (caffeineCheck == 1) {
-                filterCaffeine()
+//                filterCaffeine()
             }
             val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
             diffResult.dispatchUpdatesTo(this)
@@ -81,7 +81,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             filteredList.clear()
             filteredList.addAll(copyMainItem)
             if (caffeineCheck == 1) {
-                filterCaffeine()
+//                filterCaffeine()
             }
             val currentText = (context as MainActivity).getCurrentText()
             if (currentText.trim().isNotEmpty()) {
@@ -131,15 +131,18 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-    private fun filterCaffeine() {
+    fun filterCaffeine(isCaffeine: Int) {
         val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-        for (i in 0 until filteredList.size) {
-            if (filteredList[i].caffeine.toInt() == 0) {
-                filteredCaffeineList.add(filteredList[i])
+        if (isCaffeine == 1){
+            for (i in 0 until filteredList.size) {
+                if (filteredList[i].caffeine.toInt() == 0) {
+                    filteredCaffeineList.add(filteredList[i])
+                }
             }
+            filteredList.clear()
+            filteredList.addAll(filteredCaffeineList)
+            notifyDataSetChanged()
         }
-        filteredList.clear()
-        filteredList.addAll(filteredCaffeineList)
     }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
