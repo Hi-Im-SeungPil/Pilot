@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "204867862829",
+    "project_id": "pilotproject-d1111",
+    "storage_bucket": "pilotproject-d1111.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204867862829:android:3df04bea6f0ea0e82253a4",
+        "android_client_info": {
+          "package_name": "org.jeonfeel.pilotproject1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204867862829-0913rfjs95od6jqqustgtrrfdi20br3h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.jeonfeel.pilotproject1",
+            "certificate_hash": "05182056c8bf0023b6579b5e2f5599ee14e9f055"
+          }
+        },
+        {
+          "client_id": "204867862829-voarkfuqqt0vulnn6gfb26uqirvhkp5f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH6gDyRtg_Fyq9TKgxaeC0FtC30NGSV1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204867862829-voarkfuqqt0vulnn6gfb26uqirvhkp5f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

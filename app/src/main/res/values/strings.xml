@@ -13,4 +13,7 @@
     <string name="fragment_setting_main_radio_item1">저칼로리</string>
     <string name="fragment_setting_main_radio_item2">기본 정렬</string>
     <string name="fragment_setting_main_radio_item3">고칼로리</string>
+    <string name="default_notification_channel_id">default_channel</string>
+    <string name="preference_file_key">settingValue</string>
+    <string name="saved_de_caffeine_key">deCaffeine</string>
 </resources>

@@ -17,10 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.jeonfeel.pilotproject1.R
+import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
-import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.utils.MyFirebaseMessagingService
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
-import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
 import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     private fun initActivity() {
         initObserver()
         initListener()
+        MyFirebaseMessagingService()
 
         mainActivityViewModel.loadData()
     }
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             viewPagerAdapter.setMainItem(it)
+            if(Shared.getCaffeine(this@MainActivity) != -1){
+                viewPagerAdapter.filterCaffeine(Shared.getCaffeine(this@MainActivity))
+            }
+            Log.d(TAG,"getCaffeine : ${Shared.getCaffeine(this@MainActivity)}")
             filteringRecyclerviewItem()
         })
 
@@ -67,16 +72,15 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         })
 
         mainActivityViewModel.categoryLiveData.observe(this, Observer {
-            initRecyclerViewMain(it.size)
+            initViewPager(it.size)
             TabLayoutMediator(binding.tablayoutMain,binding.viewPager2) { tab, position ->
                 if(position == 0) {
                     tab.text = "All"
                 } else {
-                    addTabLayoutCategory(position - 1,tab)
+                    addTabLayoutCategory(position-1,tab)
                 }
             }.attach()
         })
-
     }
 
     /**
@@ -87,6 +91,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
+                filteringRecyclerviewItem()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -125,8 +130,8 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
     }
 
-    private fun initRecyclerViewMain(itemSize: Int) {
-        viewPagerAdapter = ViewPagerAdapter(this, itemSize)
+    private fun initViewPager(itemCount: Int) {
+        viewPagerAdapter = ViewPagerAdapter(this,itemCount)
         binding.viewPager2.adapter = viewPagerAdapter
     }
 

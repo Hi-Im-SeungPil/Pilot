@@ -28,7 +28,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
     private var favoriteHashMap = hashMapOf<String, Int>()
     private var selectedItemPosition: Int? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerviewMainAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = ItemRecyclerviewMainBinding.inflate(view, parent, false)
 
@@ -38,9 +38,9 @@ class RecyclerviewMainAdapter(private val context: Context) :
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
-        setItemClickListener(holder.getBinding(), filteredList[position], holder)
-        setFavoriteImage(holder.getBinding(), filteredList[position])
-        setMarquee(holder.getBinding())
+        holder.setItemClickListener(filteredList[position])
+        holder.setFavoriteImage(filteredList[position])
+        holder.setMarquee()
     }
 
     override fun getItemCount(): Int = filteredList.size
@@ -49,7 +49,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         return super.getItemViewType(position)
     }
 
-    fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO> = arrayListOf()) {
+    fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
         val diffResult = DiffUtil.calculateDiff(
             RecyclerviewMainDiffUtil(recyclerViewMainItem, newMenuDTO),
             false
@@ -70,7 +70,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 1 -> filteredList.sortByDescending { it.kcal.toInt() }
             }
             if (caffeineCheck == 1) {
-                filterCaffeine()
+//                filterCaffeine()
             }
             val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
             diffResult.dispatchUpdatesTo(this)
@@ -81,7 +81,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             filteredList.clear()
             filteredList.addAll(copyMainItem)
             if (caffeineCheck == 1) {
-                filterCaffeine()
+//                filterCaffeine()
             }
             val currentText = (context as MainActivity).getCurrentText()
             if (currentText.trim().isNotEmpty()) {
@@ -131,55 +131,18 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-    private fun setMarquee(binding: ItemRecyclerviewMainBinding) {
-        binding.cardviewRecyclerviewMainItem.setOnLongClickListener {
-            binding.textviewRecyclerviewMainItemProductName.isSelected = true
-            true
-        }
-    }
-
-    private fun setItemClickListener(
-        binding: ItemRecyclerviewMainBinding,
-        starbucksMenuDTO: StarbucksMenuDTO,
-        holder: ViewHolder,
-    ) {
-        binding.cardviewRecyclerviewMainItem.setOnClickListener {
-            val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
-            intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
-            intent.putExtra("productCD", starbucksMenuDTO.product_CD)
-
-            if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
-                intent.putExtra("favoriteIsChecked", true)
-            } else {
-                intent.putExtra("favoriteIsChecked", false)
-            }
-            (context as RecyclerViewMainListener).startForActivityResult(intent)
-            selectedItemPosition = holder.adapterPosition
-        }
-    }
-
-    private fun setFavoriteImage(
-        binding: ItemRecyclerviewMainBinding,
-        starbucksMenuDTO: StarbucksMenuDTO,
-    ) {
-        val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
-        Log.d(TAG, favoriteHashMap.toString())
-        if (favorite == null) {
-            binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
-        } else if (favorite == 0) {
-            binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
-        }
-    }
-
-    private fun filterCaffeine() {
+    fun filterCaffeine(isCaffeine: Int) {
         val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-        for (i in 0 until filteredList.size) {
-            if (filteredList[i].caffeine.toInt() == 0) {
-                filteredCaffeineList.add(filteredList[i])
+        if (isCaffeine == 1){
+            for (i in 0 until filteredList.size) {
+                if (filteredList[i].caffeine.toInt() == 0) {
+                    filteredCaffeineList.add(filteredList[i])
+                }
             }
+            filteredList.clear()
+            filteredList.addAll(filteredCaffeineList)
+            notifyDataSetChanged()
         }
-        filteredList.clear()
-        filteredList.addAll(filteredCaffeineList)
     }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
@@ -193,8 +156,37 @@ class RecyclerviewMainAdapter(private val context: Context) :
             }
         }
 
-        fun getBinding(): ItemRecyclerviewMainBinding {
-            return binding
+        fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
+            val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
+            Log.d(TAG, favoriteHashMap.toString())
+            if (favorite == null) {
+                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
+            } else if (favorite == 0) {
+                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
+            }
+        }
+
+        fun setItemClickListener(starbucksMenuDTO: StarbucksMenuDTO) {
+            binding.cardviewRecyclerviewMainItem.setOnClickListener {
+                val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
+                intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
+                intent.putExtra("productCD", starbucksMenuDTO.product_CD)
+
+                if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
+                    intent.putExtra("favoriteIsChecked", true)
+                } else {
+                    intent.putExtra("favoriteIsChecked", false)
+                }
+                (context as RecyclerViewMainListener).startForActivityResult(intent)
+                selectedItemPosition = adapterPosition
+            }
+        }
+
+        fun setMarquee() {
+            binding.cardviewRecyclerviewMainItem.setOnLongClickListener {
+                binding.textviewRecyclerviewMainItemProductName.isSelected = true
+                true
+            }
         }
     }
 }
@@ -205,7 +197,7 @@ interface RecyclerViewMainListener {
 
 class RecyclerviewMainDiffUtil(
     private val oldList: ArrayList<StarbucksMenuDTO>,
-    private val currentList: ArrayList<StarbucksMenuDTO>,
+    private val currentList: ArrayList<StarbucksMenuDTO>
 ) :
     DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size

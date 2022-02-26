@@ -2,30 +2,32 @@ package org.jeonfeel.pilotproject1.view.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 
 import androidx.fragment.app.Fragment
 import com.google.android.material.slider.RangeSlider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 
 class FragmentSettingMain : Fragment() {
 
+    private val TAG = FragmentSettingMain::class.java.simpleName
     private var _binding: FragmentSettingMainBinding? = null
     private val binding get() = _binding
     private var adapter: RecyclerviewMainAdapter? = null
     private var sortInfo = 0
-    private var deCaffeine = 0
-    private lateinit var shared: Shared
+    private var isCaffeine = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,6 @@ class FragmentSettingMain : Fragment() {
     ): View? {
         _binding = FragmentSettingMainBinding.inflate(inflater, container, false)
 
-        shared = Shared(requireActivity())
         initListener()
 
         return _binding?.root
@@ -54,11 +55,7 @@ class FragmentSettingMain : Fragment() {
         }
 
         binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
-//            GlobalScope.launch {
-//                shared.storeSetting(-192)
-//            }
-//            shared.getSetting()
-            adapter?.updateSetting(sortInfo, deCaffeine)
+            Shared.setDeCaffeine(requireActivity(), isCaffeine)
             fragmentFinish()
         }
 
@@ -72,8 +69,8 @@ class FragmentSettingMain : Fragment() {
             }
         }
 
-        binding?.sliderProtein?.stepSize = 10f
-        binding?.sliderProtein?.addOnSliderTouchListener(object : RangeSlider.OnSliderTouchListener{
+        binding?.sliderProtein?.addOnSliderTouchListener(object :
+            RangeSlider.OnSliderTouchListener {
             @SuppressLint("RestrictedApi")
             override fun onStartTrackingTouch(slider: RangeSlider) {
 
@@ -89,10 +86,16 @@ class FragmentSettingMain : Fragment() {
         })
 
         binding?.toggleCaffeine?.setOnCheckedChangeListener { button, boolean ->
-            deCaffeine = if (button.isChecked) {
+            isCaffeine = if (button.isChecked) {
                 1
             } else {
                 0
+            }
+        }
+
+        binding?.buttonResetFragmentSettingMain?.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+
             }
         }
     }
