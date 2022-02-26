@@ -49,7 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     fun getCategory() = categoryList
 
-    private fun getCategoryList() {
+    private suspend fun getCategoryList() {
         categoryList = starbucksMenuJsonObject?.keySet()?.toList()
         _categoryLiveData.postValue(categoryList)
     }

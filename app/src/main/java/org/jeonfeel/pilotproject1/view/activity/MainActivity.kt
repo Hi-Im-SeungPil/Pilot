@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
      */
     private fun initActivity() {
         initObserver()
-        initRecyclerViewMain()
         initListener()
 
         mainActivityViewModel.loadData()
@@ -68,15 +67,16 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         })
 
         mainActivityViewModel.categoryLiveData.observe(this, Observer {
-//            addTabLayoutCategory()
+            initRecyclerViewMain(it.size)
             TabLayoutMediator(binding.tablayoutMain,binding.viewPager2) { tab, position ->
                 if(position == 0) {
                     tab.text = "All"
                 } else {
-                    addTabLayoutCategory(position-1,tab)
+                    addTabLayoutCategory(position - 1,tab)
                 }
             }.attach()
         })
+
     }
 
     /**
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
 
             override fun onTextChanged(str: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                recyclerviewMainAdapter.filter.filter(str.toString())
+                viewPagerAdapter.search(str.toString())
             }
 
             override fun afterTextChanged(str: Editable?) {
@@ -125,30 +125,21 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
     }
 
-    private fun initRecyclerViewMain() {
-//        val gridLayoutManager = GridLayoutManagerWrap(this, 2)
-//        binding.RecyclerviewMain.layoutManager = gridLayoutManager
-//        recyclerviewMainAdapter = RecyclerviewMainAdapter(this)
-//        binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
-        viewPagerAdapter = ViewPagerAdapter(this)
+    private fun initRecyclerViewMain(itemSize: Int) {
+        viewPagerAdapter = ViewPagerAdapter(this, itemSize)
         binding.viewPager2.adapter = viewPagerAdapter
     }
 
     private fun filteringRecyclerviewItem() {
         if (binding.edittextSearchMain.length() != 0) {
             val currentString = binding.edittextSearchMain.text.toString()
-//            recyclerviewMainAdapter.filter.filter(currentString)
+            viewPagerAdapter.search(currentString)
         }
-//        binding.RecyclerviewMain.scrollToPosition(0)
     }
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
-//        for (i in category!!.indices) {
-//            val tabItem = binding.tablayoutMain.newTab()
-            tab.text = category!![position]
-//            binding.tablayoutMain.addTab(tabItem)
-//        }
+        tab.text = category!![position]
     }
 
     fun getCurrentText(): String {

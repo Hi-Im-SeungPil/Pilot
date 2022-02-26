@@ -28,12 +28,13 @@ class RecyclerviewMainAdapter(private val context: Context) :
     private var favoriteHashMap = hashMapOf<String, Int>()
     private var selectedItemPosition: Int? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerviewMainAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = ItemRecyclerviewMainBinding.inflate(view, parent, false)
 
         return ViewHolder(binding)
     }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemBinding(filteredList[position])
@@ -48,7 +49,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         return super.getItemViewType(position)
     }
 
-    fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
+    fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO> = arrayListOf()) {
         val diffResult = DiffUtil.calculateDiff(
             RecyclerviewMainDiffUtil(recyclerViewMainItem, newMenuDTO),
             false
@@ -68,10 +69,10 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 -1 -> filteredList.sortBy { it.kcal.toInt() }
                 1 -> filteredList.sortByDescending { it.kcal.toInt() }
             }
-            if(caffeineCheck == 1){
+            if (caffeineCheck == 1) {
                 filterCaffeine()
             }
-            val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList,filteredList))
+            val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
             diffResult.dispatchUpdatesTo(this)
         } else {
             val oldList = arrayListOf<StarbucksMenuDTO>()
@@ -79,14 +80,15 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
             filteredList.clear()
             filteredList.addAll(copyMainItem)
-            if(caffeineCheck == 1){
+            if (caffeineCheck == 1) {
                 filterCaffeine()
             }
             val currentText = (context as MainActivity).getCurrentText()
             if (currentText.trim().isNotEmpty()) {
                 filter.filter(currentText)
             } else {
-                val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList,filteredList))
+                val diffResult =
+                    DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
                 diffResult.dispatchUpdatesTo(this)
             }
         }
@@ -123,7 +125,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-                Log.d(TAG,filteredList.toString())
+                Log.d(TAG, filteredList.toString())
                 notifyDataSetChanged()
             }
         }
@@ -139,7 +141,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
     private fun setItemClickListener(
         binding: ItemRecyclerviewMainBinding,
         starbucksMenuDTO: StarbucksMenuDTO,
-        holder: ViewHolder
+        holder: ViewHolder,
     ) {
         binding.cardviewRecyclerviewMainItem.setOnClickListener {
             val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
@@ -158,7 +160,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
     private fun setFavoriteImage(
         binding: ItemRecyclerviewMainBinding,
-        starbucksMenuDTO: StarbucksMenuDTO
+        starbucksMenuDTO: StarbucksMenuDTO,
     ) {
         val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
         Log.d(TAG, favoriteHashMap.toString())
@@ -203,7 +205,7 @@ interface RecyclerViewMainListener {
 
 class RecyclerviewMainDiffUtil(
     private val oldList: ArrayList<StarbucksMenuDTO>,
-    private val currentList: ArrayList<StarbucksMenuDTO>
+    private val currentList: ArrayList<StarbucksMenuDTO>,
 ) :
     DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
