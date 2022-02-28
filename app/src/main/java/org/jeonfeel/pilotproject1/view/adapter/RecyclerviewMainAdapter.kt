@@ -3,6 +3,7 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
+import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.view.activity.MainActivity
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
@@ -61,35 +63,37 @@ class RecyclerviewMainAdapter(private val context: Context) :
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun updateSetting(sortInfo: Int, caffeineCheck: Int) {
-        if (sortInfo != 0) {
-            val oldList = arrayListOf<StarbucksMenuDTO>()
-            oldList.addAll(filteredList)
-            when (sortInfo) {
-                -1 -> filteredList.sortBy { it.kcal.toInt() }
-                1 -> filteredList.sortByDescending { it.kcal.toInt() }
-            }
-            if (caffeineCheck == 1) {
-//                filterCaffeine()
-            }
-            val diffResult = DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
-            diffResult.dispatchUpdatesTo(this)
-        } else {
-            val oldList = arrayListOf<StarbucksMenuDTO>()
-            oldList.addAll(filteredList)
+    fun updateSetting() {
+        val settingDTO = Shared.getSettingDTO(context)
+        val sortInfo = settingDTO.sortInfo
+        val isCaffeine = settingDTO.isCaffeine
 
+        if (sortInfo != context.resources.getInteger(R.integer.SORT_BASIC)) {
+
+            if (isCaffeine) {
+                filterCaffeine()
+            } else {
+                filteredList.clear()
+                filteredList.addAll(copyMainItem)
+            }
+            when (sortInfo) {
+                context.resources.getInteger(R.integer.SORT_LOW_KCAL) -> filteredList.sortBy { it.kcal.toInt() }
+                context.resources.getInteger(R.integer.SORT_HIGH_KCAL) -> filteredList.sortByDescending { it.kcal.toInt() }
+            }
+            notifyDataSetChanged()
+//            viewPagerAdapter.scrollToTop()
+        } else {
             filteredList.clear()
             filteredList.addAll(copyMainItem)
-            if (caffeineCheck == 1) {
-//                filterCaffeine()
+            if (isCaffeine) {
+                filterCaffeine()
             }
             val currentText = (context as MainActivity).getCurrentText()
             if (currentText.trim().isNotEmpty()) {
                 filter.filter(currentText)
             } else {
-                val diffResult =
-                    DiffUtil.calculateDiff(RecyclerviewMainDiffUtil(oldList, filteredList))
-                diffResult.dispatchUpdatesTo(this)
+                notifyDataSetChanged()
+//                viewPagerAdapter.scrollToTop()
             }
         }
     }
@@ -131,9 +135,8 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
     }
 
-    fun filterCaffeine(isCaffeine: Int) {
+    private fun filterCaffeine() {
         val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-        if (isCaffeine == 1){
             for (i in 0 until filteredList.size) {
                 if (filteredList[i].caffeine.toInt() == 0) {
                     filteredCaffeineList.add(filteredList[i])
@@ -141,8 +144,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
             }
             filteredList.clear()
             filteredList.addAll(filteredCaffeineList)
-            notifyDataSetChanged()
-        }
     }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :

@@ -15,6 +15,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val TAG = MyFirebaseMessagingService::class.java.simpleName
 
+    init {
+        getToken()
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
@@ -47,7 +51,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(str: String) {
         super.onNewToken(str)
-        getToken()
 //        sendSever()
     }
 

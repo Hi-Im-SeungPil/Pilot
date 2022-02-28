@@ -4,4 +4,11 @@
         <item>0.0</item>
         <item>1000.0</item>
     </array>
+
+    <integer name="SORT_LOW_KCAL">1</integer>
+    <integer name="SORT_HIGH_KCAL">2</integer>
+    <integer name="SORT_BASIC">0</integer>
+
+    <bool name="IS_CAFFEINE">true</bool>
+    <bool name="IS_NOT_CAFFEINE">false</bool>
 </resources>
