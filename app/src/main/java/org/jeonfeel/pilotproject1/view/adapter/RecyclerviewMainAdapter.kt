@@ -125,7 +125,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-                Log.d(TAG, filteredList.toString())
+//                Log.d(TAG, filteredList.toString())
                 notifyDataSetChanged()
             }
         }
@@ -158,7 +158,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
         fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
             val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
-            Log.d(TAG, favoriteHashMap.toString())
+//            Log.d(TAG, favoriteHashMap.toString())
             if (favorite == null) {
                 binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
             } else if (favorite == 0) {
