@@ -1,10 +1,11 @@
 package org.jeonfeel.pilotproject1.view.fragment
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,18 +17,20 @@ import com.google.android.material.slider.RangeSlider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
-import org.jeonfeel.pilotproject1.view.adapter.RecyclerviewMainAdapter
 
 class FragmentSettingMain : Fragment() {
 
     private val TAG = FragmentSettingMain::class.java.simpleName
     private var _binding: FragmentSettingMainBinding? = null
     private val binding get() = _binding
-    private var adapter: RecyclerviewMainAdapter? = null
     private var sortInfo = 0
-    private var isCaffeine = 0
+    private var isCaffeine = false
+    private val customListener by lazy {
+        requireActivity() as FragmentSettingListener
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +44,28 @@ class FragmentSettingMain : Fragment() {
     ): View? {
         _binding = FragmentSettingMainBinding.inflate(inflater, container, false)
 
+        initSetting()
         initListener()
 
         return _binding?.root
+    }
+
+    private fun initSetting() {
+        isCaffeine = Shared.getDeCaffeine(requireActivity())
+        binding?.toggleCaffeine?.isChecked = isCaffeine
+
+        sortInfo = Shared.getSort(requireActivity())
+        when (sortInfo) {
+            resources.getInteger(R.integer.SORT_BASIC) -> {
+                binding?.radiogroupFragmentSettingMainNormal?.isChecked = true
+            }
+            resources.getInteger(R.integer.SORT_HIGH_KCAL) -> {
+                binding?.radiogroupFragmentSettingMainHighkcal?.isChecked = true
+            }
+            resources.getInteger(R.integer.SORT_LOW_KCAL) -> {
+                binding?.radiogroupFragmentSettingMainLowkcal?.isChecked = true
+            }
+        }
     }
 
     /**
@@ -56,16 +78,19 @@ class FragmentSettingMain : Fragment() {
 
         binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
             Shared.setDeCaffeine(requireActivity(), isCaffeine)
+            Shared.setSort(requireActivity(), sortInfo)
+            customListener.updateSetting()
             fragmentFinish()
         }
 
         binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener { radioGroup: RadioGroup, i: Int ->
-            val SORT_ROW_KCAL = -1
-            val SORT_HIGH_KCAL = 1
-            val SORT_BASIC = 0
             when (radioGroup.checkedRadioButtonId) {
-                binding?.radiogroupFragmentSettingMainLowkcal?.id -> sortInfo = SORT_ROW_KCAL
-                binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo = SORT_HIGH_KCAL
+                binding?.radiogroupFragmentSettingMainLowkcal?.id -> sortInfo =
+                    resources.getInteger(R.integer.SORT_LOW_KCAL)
+                binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo =
+                    resources.getInteger(R.integer.SORT_HIGH_KCAL)
+                binding?.radiogroupFragmentSettingMainNormal?.id -> sortInfo =
+                    resources.getInteger(R.integer.SORT_BASIC)
             }
         }
 
@@ -85,28 +110,30 @@ class FragmentSettingMain : Fragment() {
             }
         })
 
-        binding?.toggleCaffeine?.setOnCheckedChangeListener { button, boolean ->
+        binding?.toggleCaffeine?.setOnCheckedChangeListener { button, _ ->
             isCaffeine = if (button.isChecked) {
-                1
+                resources.getBoolean(R.bool.IS_CAFFEINE)
             } else {
-                0
+                resources.getBoolean(R.bool.IS_NOT_CAFFEINE)
             }
         }
 
         binding?.buttonResetFragmentSettingMain?.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            val dialogBuilder = AlertDialog.Builder(requireActivity())
+            dialogBuilder.setTitle("주의!")
+                .setMessage("초기화 하시겠습니까?")
+                .setPositiveButton("확인") { _, _ -> Shared.sharedClear(requireActivity())
+                    initSetting()
+                }
+                .setNegativeButton("취소") { _, _ -> }
 
-            }
+            val dialog = dialogBuilder.create()
+            dialog.show()
         }
     }
 
-    fun setRecyclerViewMainAdapter(adapter: RecyclerviewMainAdapter) {
-        this.adapter = adapter
-    }
-
     fun fragmentFinish() {
-        val test = activity as FragmentSettingListener
-        test.frameLayoutGone()
+        customListener.frameLayoutGone()
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.remove(this)
@@ -126,7 +153,6 @@ class FragmentSettingMain : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        adapter = null
     }
 
     companion object {
@@ -140,6 +166,7 @@ class FragmentSettingMain : Fragment() {
 
     interface FragmentSettingListener {
         fun frameLayoutGone()
+        fun updateSetting()
     }
 }
 

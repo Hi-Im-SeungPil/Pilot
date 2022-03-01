@@ -8,20 +8,25 @@ import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.Viewpager2ItemBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
+import org.jeonfeel.pilotproject1.view.activity.MainActivity
+
 
 class ViewPagerAdapter(private val context: Context,private val itemCount: Int) :
-    RecyclerView.Adapter<ViewPagerAdapter.CustomViewHolder>() {
+    RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
 
-    private val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
+    private val TAG = ViewPagerAdapter::class.java.simpleName
+    val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
+//    private var allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
+//    private var adapters = ArrayList<RecyclerviewMainAdapter>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.CustomViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = Viewpager2ItemBinding.inflate(view, parent, false)
 
-        return CustomViewHolder(binding)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewPagerAdapter.CustomViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewPagerAdapter.ViewHolder, position: Int) {
         holder.itemInit()
     }
 
@@ -29,28 +34,56 @@ class ViewPagerAdapter(private val context: Context,private val itemCount: Int) 
         return itemCount
     }
 
-    fun search(str: String) {
-        recyclerviewMainAdapter.filter.filter(str)
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
     }
 
-    fun setMainItem(array: ArrayList<StarbucksMenuDTO>) {
-        recyclerviewMainAdapter.setRecyclerViewMainItem(array)
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    fun search(str: String) {
+        recyclerviewMainAdapter.filter.filter(str)
+//        test.search(str)
+    }
+
+    fun setMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
+        recyclerviewMainAdapter.setRecyclerViewMainItem(newMenuDTO)
     }
 
     fun updateFavoriteImage(hash: HashMap<String, Int>) {
         recyclerviewMainAdapter.updateFavoriteImage(hash)
     }
 
-    fun filterCaffeine(isCaffeine: Int) {
-        recyclerviewMainAdapter.filterCaffeine(isCaffeine)
+    fun updateSetting() {
+        recyclerviewMainAdapter.updateSetting()
     }
 
-    inner class CustomViewHolder(private val binding: Viewpager2ItemBinding) :
+    fun scrollToTop() {
+//        binding.RecyclerviewMain.scrollToPosition(0)
+    }
+
+    inner class ViewHolder(private val binding: Viewpager2ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun itemInit() {
+
             val gridLayoutManager = GridLayoutManagerWrap(context, 2)
             binding.RecyclerviewMain.layoutManager = gridLayoutManager
+//            recyclerviewMainAdapter.setRecyclerViewMainItem(allCoffee[adapterPosition])
             binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
+            Log.d(TAG,adapterPosition.toString())
+
+//            adapters.add(recyclerviewMainAdapter)
         }
+
+//        override fun search(str: String) {
+//            adapters[(context as MainActivity).getCurrentPosition()].filter.filter(str)
+//        }
     }
 }
+
+interface Test {
+    fun search(str: String)
+}
+

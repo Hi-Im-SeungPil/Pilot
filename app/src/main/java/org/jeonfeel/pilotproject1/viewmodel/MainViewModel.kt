@@ -80,7 +80,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
                 for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-                    Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
                     val sampleItem =
                         gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
                     starbucksMenuDTOs.add(sampleItem)
@@ -101,6 +100,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         recyclerViewMainList = starbucksMenuDTOs
         _starbucksMenuLiveData.postValue(recyclerViewMainList)
     }
+
+//    fun getStarbuk(): ArrayList<ArrayList<StarbucksMenuDTO>> {
+//
+//        val gson = Gson()
+//
+//        val allMenu = ArrayList<StarbucksMenuDTO>()
+//        val result = ArrayList<ArrayList<StarbucksMenuDTO>>()
+//
+//        for (element in categoryList!!) {
+//            val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
+//            val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
+//            val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
+//            for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
+//                Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
+//                val sampleItem =
+//                    gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
+//                starbucksMenuDTOs.add(sampleItem)
+//                allMenu.add(sampleItem)
+//            }
+//            result.add(starbucksMenuDTOs)
+//        }
+//
+//        return result
+//    }
 
     /**
      * 즐겨찾기

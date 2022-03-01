@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.jeonfeel.pilotproject1.R
@@ -60,11 +61,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             viewPagerAdapter.setMainItem(it)
-            if(Shared.getCaffeine(this@MainActivity) != -1){
-                viewPagerAdapter.filterCaffeine(Shared.getCaffeine(this@MainActivity))
-            }
-            Log.d(TAG,"getCaffeine : ${Shared.getCaffeine(this@MainActivity)}")
-            filteringRecyclerviewItem()
+            searchRecyclerviewItem()
         })
 
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
@@ -72,12 +69,13 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         })
 
         mainActivityViewModel.categoryLiveData.observe(this, Observer {
-            initViewPager(it.size)
-            TabLayoutMediator(binding.tablayoutMain,binding.viewPager2) { tab, position ->
-                if(position == 0) {
+            initViewPager()
+            TabLayoutMediator(binding.tablayoutMain, binding.viewPager2) { tab, position ->
+                Log.d(TAG, position.toString())
+                if( position == 0){
                     tab.text = "All"
-                } else {
-                    addTabLayoutCategory(position-1,tab)
+                }else {
+                    addTabLayoutCategory(position - 1, tab)
                 }
             }.attach()
         })
@@ -91,7 +89,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
-                filteringRecyclerviewItem()
+                searchRecyclerviewItem()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -120,7 +118,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             binding.framelayoutSettingMain.visibility = View.VISIBLE
 
             val fragment = FragmentSettingMain.newInstance()
-//            fragment.setRecyclerViewMainAdapter(recyclerviewMainAdapter)
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.framelayoutSettingMain.id, fragment)
@@ -130,12 +127,13 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
     }
 
-    private fun initViewPager(itemCount: Int) {
-        viewPagerAdapter = ViewPagerAdapter(this,itemCount)
+    private fun initViewPager() {
+        viewPagerAdapter = ViewPagerAdapter(this,
+            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9)
         binding.viewPager2.adapter = viewPagerAdapter
     }
 
-    private fun filteringRecyclerviewItem() {
+    private fun searchRecyclerviewItem() {
         if (binding.edittextSearchMain.length() != 0) {
             val currentString = binding.edittextSearchMain.text.toString()
             viewPagerAdapter.search(currentString)
@@ -167,12 +165,20 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
         }
 
+//    fun getCurrentPosition(): Int {
+//        return binding.viewPager2.currentItem
+//    }
+
     override fun frameLayoutGone() {
         val animation =
             AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
         binding.framelayoutSettingMain.animation = animation
 
         binding.framelayoutSettingMain.visibility = View.GONE
+    }
+
+    override fun updateSetting() {
+        viewPagerAdapter.updateSetting()
     }
 
     override fun startForActivityResult(intent: Intent) {
