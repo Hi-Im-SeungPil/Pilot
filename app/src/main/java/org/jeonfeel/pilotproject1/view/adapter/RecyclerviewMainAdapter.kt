@@ -26,7 +26,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     private var filteredList = recyclerViewMainItem
-    private var copyMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     private var favoriteHashMap = hashMapOf<String, Int>()
     private var selectedItemPosition: Int? = null
 
@@ -58,45 +57,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         )
         recyclerViewMainItem.clear()
         recyclerViewMainItem.addAll(newMenuDTO)
-        copyMainItem.clear()
-        copyMainItem.addAll(newMenuDTO)
-//        recyclerViewMainItem = newMenuDTO
-//        recyclerViewMainItem = newMenuDTO
         diffResult.dispatchUpdatesTo(this)
-//        notifyDataSetChanged()
-    }
-
-    fun updateSetting() {
-        val settingDTO = Shared.getSettingDTO(context)
-        val sortInfo = settingDTO.sortInfo
-        val isCaffeine = settingDTO.isCaffeine
-
-        if (sortInfo != context.resources.getInteger(R.integer.SORT_BASIC)) {
-
-            if (isCaffeine) {
-                filterCaffeine()
-            } else {
-                filteredList.clear()
-                filteredList.addAll(copyMainItem)
-            }
-            when (sortInfo) {
-                context.resources.getInteger(R.integer.SORT_LOW_KCAL) -> filteredList.sortBy { it.kcal.toInt() }
-                context.resources.getInteger(R.integer.SORT_HIGH_KCAL) -> filteredList.sortByDescending { it.kcal.toInt() }
-            }
-            notifyDataSetChanged()
-        } else {
-            filteredList.clear()
-            filteredList.addAll(copyMainItem)
-            if (isCaffeine) {
-                filterCaffeine()
-            }
-            val currentText = (context as MainActivity).getCurrentText()
-            if (currentText.trim().isNotEmpty()) {
-                filter.filter(currentText)
-            } else {
-                notifyDataSetChanged()
-            }
-        }
     }
 
     fun updateFavoriteImage(newHashMap: HashMap<String, Int>) {
@@ -130,21 +91,9 @@ class RecyclerviewMainAdapter(private val context: Context) :
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-//                Log.d(TAG, filteredList.toString())
                 notifyDataSetChanged()
             }
         }
-    }
-
-    private fun filterCaffeine() {
-        val filteredCaffeineList = ArrayList<StarbucksMenuDTO>()
-            for (i in 0 until filteredList.size) {
-                if (filteredList[i].caffeine.toInt() == 0) {
-                    filteredCaffeineList.add(filteredList[i])
-                }
-            }
-            filteredList.clear()
-            filteredList.addAll(filteredCaffeineList)
     }
 
     inner class ViewHolder(private val binding: ItemRecyclerviewMainBinding) :
@@ -160,7 +109,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
 
         fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
             val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
-//            Log.d(TAG, favoriteHashMap.toString())
             if (favorite == null) {
                 binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
             } else if (favorite == 0) {
@@ -173,7 +121,6 @@ class RecyclerviewMainAdapter(private val context: Context) :
                 val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
                 intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
                 intent.putExtra("productCD", starbucksMenuDTO.product_CD)
-
                 if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
                     intent.putExtra("favoriteIsChecked", true)
                 } else {

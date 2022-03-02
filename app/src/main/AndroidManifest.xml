@@ -17,16 +17,17 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.StarbucksMenuDetailActivity"/>
 
-<!--        FCM-->
-<!--        <meta-data-->
-<!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
-<!--            android:value="@string/default_notification_channel_id" />-->
+        <activity android:name=".view.activity.StarbucksMenuDetailActivity"/>
+        <activity android:name=".view.activity.FcmBoxActivity"/>
+
+        <!--        FCM-->
+        <!--        <meta-data-->
+        <!--            android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+        <!--            android:value="@string/default_notification_channel_id" />-->
 
         <service
             android:name=".utils.MyFirebaseMessagingService"

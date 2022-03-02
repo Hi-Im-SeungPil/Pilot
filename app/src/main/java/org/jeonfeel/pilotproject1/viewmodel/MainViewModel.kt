@@ -1,6 +1,7 @@
 package org.jeonfeel.pilotproject1.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -9,8 +10,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.*
+import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
+import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.repository.MainRepository
 
 
@@ -21,12 +24,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var starbucksMenuJsonObject: JsonObject? = null
     private var categoryList: List<String>? = null
-    private var recyclerViewMainList: ArrayList<StarbucksMenuDTO>? = null
     private var favorites: HashMap<String, Int>? = null
 
     private val _starbucksMenuLiveData: MutableLiveData<ArrayList<StarbucksMenuDTO>> =
         MutableLiveData<ArrayList<StarbucksMenuDTO>>()
     val starbucksMenuLiveData: LiveData<ArrayList<StarbucksMenuDTO>> get() = _starbucksMenuLiveData
+    private val currentData get() = _starbucksMenuLiveData.value
+    private val originalList = ArrayList<StarbucksMenuDTO>()
 
     private val _favoriteLiveData: MutableLiveData<HashMap<String, Int>> =
         MutableLiveData<HashMap<String, Int>>()
@@ -39,7 +43,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
-            getStarbucksMenu()
+            getStarbucksMenu(getApplication())
             getFavorites()
         }
     }
@@ -59,7 +63,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     fun updateStarbucksMenu(position: Int = -1) {
         _starbucksMenuLiveData.value?.clear()
-        getStarbucksMenu(position)
+        getStarbucksMenu(getApplication(),position)
     }
 
     private suspend fun getStarbucksMenuJsonObj() {
@@ -71,7 +75,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun getStarbucksMenu(categoryPosition: Int = -1) {
+    private fun getStarbucksMenu(context: Context, categoryPosition: Int = -1) {
         val gson = Gson()
         val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>() //category setting
         if (categoryPosition == -1) {
@@ -97,33 +101,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 starbucksMenuDTOs.add(sampleItem)
             }
         }
-        recyclerViewMainList = starbucksMenuDTOs
-        _starbucksMenuLiveData.postValue(recyclerViewMainList)
+        originalList.clear()
+        originalList.addAll(starbucksMenuDTOs)
+        _starbucksMenuLiveData.postValue(updateSetting(starbucksMenuDTOs, context))
     }
-
-//    fun getStarbuk(): ArrayList<ArrayList<StarbucksMenuDTO>> {
-//
-//        val gson = Gson()
-//
-//        val allMenu = ArrayList<StarbucksMenuDTO>()
-//        val result = ArrayList<ArrayList<StarbucksMenuDTO>>()
-//
-//        for (element in categoryList!!) {
-//            val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
-//            val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
-//            val starbucksMenuDTOs = ArrayList<StarbucksMenuDTO>()
-//            for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-//                Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
-//                val sampleItem =
-//                    gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
-//                starbucksMenuDTOs.add(sampleItem)
-//                allMenu.add(sampleItem)
-//            }
-//            result.add(starbucksMenuDTOs)
-//        }
-//
-//        return result
-//    }
 
     /**
      * 즐겨찾기
@@ -164,5 +145,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val favorite = Favorite(productCD)
             mainRepository.getFavoritesInstance().delete(favorite)
         }
+    }
+
+    /**
+     * 세팅
+     * */
+    private fun updateSetting(starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,context: Context): ArrayList<StarbucksMenuDTO> {
+        val settingDTO = Shared.getSettingDTO(context)
+        val sortInfo = settingDTO.sortInfo
+        val isCaffeine = settingDTO.isCaffeine
+        val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
+        var tempList = sortList(starbucksMenuDTOs, context, sortInfo)
+        tempList = filterCaffeine(tempList,isCaffeine)
+        resultList.addAll(tempList)
+
+        return resultList
+    }
+
+    fun updateSettingImmediately(context: Context) {
+        val settingDTO = Shared.getSettingDTO(context)
+        val sortInfo = settingDTO.sortInfo
+        val isCaffeine = settingDTO.isCaffeine
+        val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
+        var tempList = sortList(originalList, context, sortInfo)
+        tempList = filterCaffeine(tempList,isCaffeine)
+        resultList.addAll(tempList)
+
+        _starbucksMenuLiveData.value = resultList
+    }
+
+    private fun sortList(starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>, context: Context, sortInfo: Int): List<StarbucksMenuDTO> {
+        val resultList = when (sortInfo) {
+            context.resources.getInteger(R.integer.SORT_LOW_KCAL) -> starbucksMenuDTOs.sortedBy { it.kcal.toInt() }
+            context.resources.getInteger(R.integer.SORT_HIGH_KCAL) -> starbucksMenuDTOs.sortedByDescending { it.kcal.toInt() }
+            else -> {
+                originalList
+            }
+        }
+        return resultList
+    }
+
+    private fun filterCaffeine(
+        resultList: List<StarbucksMenuDTO>,
+        onCaffeineFilter: Boolean
+    ): List<StarbucksMenuDTO> {
+        if (onCaffeineFilter) {
+             return resultList.filter { it.caffeine.toInt() == 0 }
+        }
+        return resultList
     }
 }

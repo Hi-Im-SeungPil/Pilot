@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
@@ -71,12 +72,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         mainActivityViewModel.categoryLiveData.observe(this, Observer {
             initViewPager()
             TabLayoutMediator(binding.tablayoutMain, binding.viewPager2) { tab, position ->
-                Log.d(TAG, position.toString())
-                if( position == 0){
-                    tab.text = "All"
-                }else {
-                    addTabLayoutCategory(position - 1, tab)
-                }
+                addTabLayoutCategory(position - 1, tab)
             }.attach()
         })
     }
@@ -125,6 +121,11 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         }
 
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
+
+        binding.btnMessageBoxMain.setOnClickListener{
+            val intent = Intent(this, FcmBoxActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun initViewPager() {
@@ -142,7 +143,11 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
-        tab.text = category!![position]
+        if(position == -1) {
+            tab.text = "All"
+        } else {
+            tab.text = category!![position]
+        }
     }
 
     fun getCurrentText(): String {
@@ -165,20 +170,15 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
         }
 
-//    fun getCurrentPosition(): Int {
-//        return binding.viewPager2.currentItem
-//    }
-
     override fun frameLayoutGone() {
         val animation =
             AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
         binding.framelayoutSettingMain.animation = animation
-
         binding.framelayoutSettingMain.visibility = View.GONE
     }
 
-    override fun updateSetting() {
-        viewPagerAdapter.updateSetting()
+    override fun updateSettingImmediately() {
+        mainActivityViewModel.updateSettingImmediately(this)
     }
 
     override fun startForActivityResult(intent: Intent) {

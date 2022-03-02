@@ -2,9 +2,7 @@ package org.jeonfeel.pilotproject1.view.fragment
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +12,6 @@ import androidx.activity.OnBackPressedCallback
 
 import androidx.fragment.app.Fragment
 import com.google.android.material.slider.RangeSlider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.FragmentSettingMainBinding
@@ -79,7 +74,7 @@ class FragmentSettingMain : Fragment() {
         binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
             Shared.setDeCaffeine(requireActivity(), isCaffeine)
             Shared.setSort(requireActivity(), sortInfo)
-            customListener.updateSetting()
+            customListener.updateSettingImmediately()
             fragmentFinish()
         }
 
@@ -124,6 +119,8 @@ class FragmentSettingMain : Fragment() {
                 .setMessage("초기화 하시겠습니까?")
                 .setPositiveButton("확인") { _, _ -> Shared.sharedClear(requireActivity())
                     initSetting()
+                    customListener.updateSettingImmediately()
+                    customListener.frameLayoutGone()
                 }
                 .setNegativeButton("취소") { _, _ -> }
 
@@ -166,7 +163,7 @@ class FragmentSettingMain : Fragment() {
 
     interface FragmentSettingListener {
         fun frameLayoutGone()
-        fun updateSetting()
+        fun updateSettingImmediately()
     }
 }
 
