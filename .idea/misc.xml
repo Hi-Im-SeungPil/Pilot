@@ -14,6 +14,8 @@
         <entry key="..\:/Users/thrhc/Desktop/PilotProject1-master/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
         <entry key="..\:/Users/thrhc/Desktop/PilotProject1-master/app/src/main/res/layout/item_recyclerview_main.xml" value="0.2" />
         <entry key="app/src/main/res/drawable/bg_detail.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/bg_setting_sort.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/bg_tablayout_main.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_button_admit.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_button_reset.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/fragment_setting_main_corner.xml" value="0.245" />
@@ -22,6 +24,10 @@
         <entry key="app/src/main/res/drawable/main_edittext.xml" value="0.245" />
         <entry key="app/src/main/res/drawable/main_tablayout_backgroud_unselected.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/main_tablayout_background.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/selector_setting_sort.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/selector_tabitem_selected.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/selector_tabitem_unselected.xml" value="0.183" />
+        <entry key="app/src/main/res/drawable/shape_underline_edittext.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/under_line_edittext.xml" value="0.183" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_starbucksmenu_detail.xml" value="0.3074792243767313" />

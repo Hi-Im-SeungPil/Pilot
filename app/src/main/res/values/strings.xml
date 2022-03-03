@@ -13,8 +13,18 @@
     <string name="fragment_setting_main_radio_item1">저칼로리</string>
     <string name="fragment_setting_main_radio_item2">기본 정렬</string>
     <string name="fragment_setting_main_radio_item3">고칼로리</string>
+    <string name="fragment_setting_main_protein">단백질</string>
+    <string name="fragment_setting_main_fat">지방</string>
+    <string name="fragment_setting_main_sugar">설탕</string>
     <string name="default_notification_channel_id">default_channel</string>
     <string name="preference_file_key">settingValue</string>
     <string name="saved_de_caffeine_key">isCaffeine</string>
     <string name="saved_sort_key">sortKind</string>
+    <string name="nutritionalInformation_highProtein_key">highProtein</string>
+    <string name="nutritionalInformation_lowProtein_key">lowProtein</string>
+    <string name="nutritionalInformation_highFat_key">highFat</string>
+    <string name="nutritionalInformation_lowFat_key">lowFat</string>
+    <string name="nutritionalInformation_highSugar_key">highSugar</string>
+    <string name="nutritionalInformation_lowSugar_key">lowSugar</string>
+
 </resources>

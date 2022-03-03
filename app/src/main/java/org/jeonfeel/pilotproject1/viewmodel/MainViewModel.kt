@@ -15,6 +15,7 @@ import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.repository.MainRepository
+import kotlin.math.ceil
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -29,7 +30,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _starbucksMenuLiveData: MutableLiveData<ArrayList<StarbucksMenuDTO>> =
         MutableLiveData<ArrayList<StarbucksMenuDTO>>()
     val starbucksMenuLiveData: LiveData<ArrayList<StarbucksMenuDTO>> get() = _starbucksMenuLiveData
-    private val currentData get() = _starbucksMenuLiveData.value
     private val originalList = ArrayList<StarbucksMenuDTO>()
 
     private val _favoriteLiveData: MutableLiveData<HashMap<String, Int>> =
@@ -38,6 +38,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _categoryLiveData: MutableLiveData<List<String>> = MutableLiveData<List<String>>()
     val categoryLiveData: LiveData<List<String>> get() = _categoryLiveData
+
+    var maxProtein = 0.0f
+    var maxFat = 0.0f
+    var maxSugar = 0.0f
+    var tempNutritionalInformation = HashMap<String, Int>()
 
     fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,7 +68,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     fun updateStarbucksMenu(position: Int = -1) {
         _starbucksMenuLiveData.value?.clear()
-        getStarbucksMenu(getApplication(),position)
+        getStarbucksMenu(getApplication(), position)
     }
 
     private suspend fun getStarbucksMenuJsonObj() {
@@ -101,6 +106,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 starbucksMenuDTOs.add(sampleItem)
             }
         }
+        maxFat = starbucksMenuDTOs.maxOf { it.fat.toFloat() }
+        maxProtein = starbucksMenuDTOs.maxOf { it.protein.toFloat() }
+        maxSugar = starbucksMenuDTOs.maxOf { it.sugars.toFloat() }
         originalList.clear()
         originalList.addAll(starbucksMenuDTOs)
         _starbucksMenuLiveData.postValue(updateSetting(starbucksMenuDTOs, context))
@@ -150,31 +158,43 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 세팅
      * */
-    private fun updateSetting(starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,context: Context): ArrayList<StarbucksMenuDTO> {
+    private fun updateSetting(
+        starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,
+        context: Context
+    ): ArrayList<StarbucksMenuDTO> {
         val settingDTO = Shared.getSettingDTO(context)
         val sortInfo = settingDTO.sortInfo
         val isCaffeine = settingDTO.isCaffeine
+
         val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
         var tempList = sortList(starbucksMenuDTOs, context, sortInfo)
-        tempList = filterCaffeine(tempList,isCaffeine)
+        tempList = filterCaffeine(tempList, isCaffeine)
+
         resultList.addAll(tempList)
 
         return resultList
     }
 
-    fun updateSettingImmediately(context: Context) {
+    fun updateSettingImmediately(context: Context, nutritionalInformation: HashMap<String, Int>) {
         val settingDTO = Shared.getSettingDTO(context)
         val sortInfo = settingDTO.sortInfo
         val isCaffeine = settingDTO.isCaffeine
+
         val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
         var tempList = sortList(originalList, context, sortInfo)
-        tempList = filterCaffeine(tempList,isCaffeine)
+        tempList = filterCaffeine(tempList, isCaffeine)
+        tempList = filterNutritionalInformation(context, tempList, nutritionalInformation)
+
         resultList.addAll(tempList)
 
         _starbucksMenuLiveData.value = resultList
     }
 
-    private fun sortList(starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>, context: Context, sortInfo: Int): List<StarbucksMenuDTO> {
+    private fun sortList(
+        starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,
+        context: Context,
+        sortInfo: Int
+    ): List<StarbucksMenuDTO> {
         val resultList = when (sortInfo) {
             context.resources.getInteger(R.integer.SORT_LOW_KCAL) -> starbucksMenuDTOs.sortedBy { it.kcal.toInt() }
             context.resources.getInteger(R.integer.SORT_HIGH_KCAL) -> starbucksMenuDTOs.sortedByDescending { it.kcal.toInt() }
@@ -190,7 +210,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         onCaffeineFilter: Boolean
     ): List<StarbucksMenuDTO> {
         if (onCaffeineFilter) {
-             return resultList.filter { it.caffeine.toInt() == 0 }
+            return resultList.filter { it.caffeine.toInt() == 0 }
+        }
+        return resultList
+    }
+
+    private fun filterNutritionalInformation(
+        context: Context,
+        resultList: List<StarbucksMenuDTO>,
+        nutritionalInformation: HashMap<String, Int>
+    ): List<StarbucksMenuDTO> {
+        if (nutritionalInformation.size != 0) {
+            return resultList.filter {
+                ceil(it.protein.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowProtein_key)]!!..nutritionalInformation[context.getString(
+                    R.string.nutritionalInformation_highProtein_key
+                )]!!
+                        && ceil(it.fat.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowFat_key)]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highFat_key)]!!
+                        && ceil(it.sugars.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowSugar_key)]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highSugar_key)]!!
+            }
         }
         return resultList
     }

@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -33,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="@string/fragment_setting_main_filter_title"
             android:textColor="#000000"
-            android:textSize="30sp"
+            android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -49,7 +47,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/toggle_caffeine"
+                android:id="@+id/switch_caffeine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="디카페인" />
@@ -57,131 +55,254 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RadioGroup
-        android:id="@+id/radiogroup_fragment_setting_main"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_fragment_setting_main">
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/linear_fragmentSetting_bottom"
+        app:layout_constraintTop_toBottomOf="@id/constraint_fragment_setting_main">
 
-        <RadioButton
-            android:id="@+id/radiogroup_fragment_setting_main_lowkcal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/fragment_setting_main_radio_item1"
-            android:textSize="20sp" />
 
-        <RadioButton
-            android:id="@+id/radiogroup_fragment_setting_main_normal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="@string/fragment_setting_main_radio_item2"
-            android:textSize="20sp" />
-
-        <RadioButton
-            android:id="@+id/radiogroup_fragment_setting_main_highkcal"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/fragment_setting_main_radio_item3"
-            android:textSize="20sp" />
-    </RadioGroup>
+            android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/linear_rangeSlider_protein"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/radiogroup_fragment_setting_main">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="단백질" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_slider_protein_low"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radiogroup_fragment_setting_main"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0"/>
-            <TextView
-                android:layout_width="wrap_content"
+                android:background="@drawable/bg_setting_sort"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <RadioButton
+                    android:id="@+id/radiogroup_fragment_setting_main_lowkcal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginBottom="7dp"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/blue"
+                    android:gravity="center_vertical"
+                    android:layoutDirection="rtl"
+                    android:text="@string/fragment_setting_main_radio_item1"
+                    android:textColor="@drawable/selector_setting_sort"
+                    android:textSize="20sp" />
+
+                <RadioButton
+                    android:id="@+id/radiogroup_fragment_setting_main_normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginBottom="7dp"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/blue"
+                    android:checked="true"
+                    android:gravity="center_vertical"
+                    android:layoutDirection="rtl"
+                    android:text="@string/fragment_setting_main_radio_item2"
+                    android:textColor="@drawable/selector_setting_sort"
+                    android:textSize="20sp" />
+
+                <RadioButton
+                    android:id="@+id/radiogroup_fragment_setting_main_highkcal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/blue"
+                    android:gravity="center_vertical"
+                    android:layoutDirection="rtl"
+                    android:text="@string/fragment_setting_main_radio_item3"
+                    android:textColor="@drawable/selector_setting_sort"
+                    android:textSize="20sp" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/linear_rangeSlider_protein"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="~"/>
-            <TextView
-                android:id="@+id/tv_slider_protein_high"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/radiogroup_fragment_setting_main">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="단백질"
+                    android:textColor="@color/B6B6B6"
+                    android:textSize="17sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_slider_protein_low"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ~ "
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:id="@+id/tv_slider_protein_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+                </LinearLayout>
+
+
+                <com.google.android.material.slider.RangeSlider
+                    android:id="@+id/slider_protein"
+                    style="@style/Widget.App.Slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:stepSize="1"
+                    android:valueFrom="0" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_rangeSlider_fat"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="최대"/>
-        </LinearLayout>
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_protein">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="지방"
+                    android:textColor="@color/B6B6B6"
+                    android:textSize="17sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_slider_fat_low"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ~ "
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:id="@+id/tv_slider_fat_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.RangeSlider
+                    android:id="@+id/slider_fat"
+                    style="@style/Widget.App.Slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:stepSize="1"
+                    android:valueFrom="0" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_rangeSlider_sugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_fat">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="설탕"
+                    android:textColor="@color/B6B6B6"
+                    android:textSize="17sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="7dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_sugar_low"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ~ "
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+
+                    <TextView
+                        android:id="@+id/tv_sugar_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue"
+                        android:textSize="23sp" />
+                </LinearLayout>
+
+                <com.google.android.material.slider.RangeSlider
+                    android:id="@+id/slider_sugar"
+                    style="@style/Widget.App.Slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:stepSize="1"
+                    android:valueFrom="0" />
+            </LinearLayout>
 
 
-        <com.google.android.material.slider.RangeSlider
-            android:id="@+id/slider_protein"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:valueFrom="0"
-            android:valueTo="1000"
-            app:values="@array/initial_slider_values" />
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
 
     <LinearLayout
-        android:id="@+id/linear_rangeSlider_fat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_protein">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="지방" />
-
-        <com.google.android.material.slider.RangeSlider
-            android:id="@+id/slider_fat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:valueFrom="0"
-            android:valueTo="1000"
-            app:values="@array/initial_slider_values" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_rangeSlider_sugar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_fat">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="설탕" />
-
-        <com.google.android.material.slider.RangeSlider
-            android:id="@+id/slider_sugar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:valueFrom="0"
-            android:valueTo="1000"
-            app:values="@array/initial_slider_values" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/linear_fragmentSetting_bottom"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginLeft="10dp"

@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
                 searchRecyclerviewItem()
+                mainActivityViewModel.tempNutritionalInformation.clear()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -114,6 +115,13 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             binding.framelayoutSettingMain.visibility = View.VISIBLE
 
             val fragment = FragmentSettingMain.newInstance()
+            fragment.setSliderValue(
+                mainActivityViewModel.maxProtein,
+                mainActivityViewModel.maxFat,
+                mainActivityViewModel.maxSugar,
+                mainActivityViewModel.tempNutritionalInformation
+
+            )
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.framelayoutSettingMain.id, fragment)
@@ -122,15 +130,17 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
 
-        binding.btnMessageBoxMain.setOnClickListener{
+        binding.btnMessageBoxMain.setOnClickListener {
             val intent = Intent(this, FcmBoxActivity::class.java)
             startActivity(intent)
         }
     }
 
     private fun initViewPager() {
-        viewPagerAdapter = ViewPagerAdapter(this,
-            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9)
+        viewPagerAdapter = ViewPagerAdapter(
+            this,
+            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9
+        )
         binding.viewPager2.adapter = viewPagerAdapter
     }
 
@@ -143,7 +153,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
-        if(position == -1) {
+        if (position == -1) {
             tab.text = "All"
         } else {
             tab.text = category!![position]
@@ -177,8 +187,10 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.visibility = View.GONE
     }
 
-    override fun updateSettingImmediately() {
-        mainActivityViewModel.updateSettingImmediately(this)
+    override fun updateSettingImmediately(nutritionalInformation: HashMap<String, Int>) {
+        mainActivityViewModel.updateSettingImmediately(this, nutritionalInformation)
+        mainActivityViewModel.tempNutritionalInformation = nutritionalInformation
+        mainActivityViewModel.tempNutritionalInformation
     }
 
     override fun startForActivityResult(intent: Intent) {

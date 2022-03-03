@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.App.Slider" parent="Widget.MaterialComponents.Slider">
+<!--        track-->
+        <item name="trackColorActive">@color/blue</item>
+        <item name="trackColorInactive">@color/FFE8E8E8</item>
+        <item name="trackHeight">3dp</item>
+<!--        thumb-->
+        <item name="thumbColor">@color/white</item>
+        <item name="thumbElevation">1dp</item>
+        <item name="thumbStrokeColor">@color/FFE8E8E8</item>
+        <item name="thumbStrokeWidth">1dp</item>
+        <item name="thumbRadius">11dp</item>
+<!--        tick-->
+        <item name="tickVisible">false</item>
+    </style>
+
+</resources>
