@@ -87,17 +87,17 @@ class FragmentSettingMain : Fragment() {
             val proteinValues = binding?.sliderProtein?.values
             val fatValues = binding?.sliderFat?.values
             val sugarValues = binding?.sliderSugar?.values
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
-                proteinValues?.get(0)!!.toInt()
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
+                proteinValues?.get(0)!!.toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
                 proteinValues[1]!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
-                fatValues?.get(0)!!.toInt()
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] =
+                fatValues?.get(0)!!.toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
                 fatValues[1]!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
-                sugarValues?.get(0)!!.toInt()
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] =
+                sugarValues?.get(0)!!.toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
                 sugarValues[1]!!.toInt()
             customListener.updateSettingImmediately(nutritionalInformation)
             fragmentFinish()
@@ -177,14 +177,14 @@ class FragmentSettingMain : Fragment() {
                     labelBehavior = LabelFormatter.LABEL_GONE
                     valueTo = maxProtein
                     values = listOf(
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)]!!.toFloat(),
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)]!!.toFloat()
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)]!!.toFloat(),
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)]!!.toFloat()
                     )
                 }
                 binding?.tvSliderProteinLow?.text =
-                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)]!!.toString()
-                binding?.tvSliderProteinHigh?.text =
                     nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)]!!.toString()
+                binding?.tvSliderProteinHigh?.text =
+                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)]!!.toString()
             }
             else -> {
                 binding?.sliderProtein?.apply {
@@ -208,14 +208,14 @@ class FragmentSettingMain : Fragment() {
                     labelBehavior = LabelFormatter.LABEL_GONE
                     valueTo = maxFat
                     values = listOf(
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)]!!.toFloat(),
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)]!!.toFloat()
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)]!!.toFloat(),
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)]!!.toFloat()
                     )
                 }
                 binding?.tvSliderFatLow?.text =
-                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)].toString()
-                binding?.tvSliderFatHigh?.text =
                     nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)].toString()
+                binding?.tvSliderFatHigh?.text =
+                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)].toString()
             }
             else -> {
                 binding?.sliderFat?.apply {
@@ -239,14 +239,14 @@ class FragmentSettingMain : Fragment() {
                     labelBehavior = LabelFormatter.LABEL_GONE
                     valueTo = maxSugar
                     values = listOf(
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)]!!.toFloat(),
-                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)]!!.toFloat()
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)]!!.toFloat(),
+                        nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)]!!.toFloat()
                     )
                 }
                 binding?.tvSugarLow?.text =
-                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)].toString()
-                binding?.tvSugarHigh?.text =
                     nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)].toString()
+                binding?.tvSugarHigh?.text =
+                    nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)].toString()
             }
             else -> {
                 binding?.sliderSugar?.apply {
