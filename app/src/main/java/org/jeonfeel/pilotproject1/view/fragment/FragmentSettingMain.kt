@@ -113,7 +113,7 @@ class FragmentSettingMain : Fragment() {
                     resources.getInteger(R.integer.SORT_BASIC)
             }
         }
-d
+
         binding?.sliderProtein?.addOnChangeListener(RangeSlider.OnChangeListener { slider, _, _ ->
             val sliderValue = slider.values
             val minValue = sliderValue[0]
