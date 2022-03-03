@@ -87,18 +87,7 @@ class FragmentSettingMain : Fragment() {
             val proteinValues = binding?.sliderProtein?.values
             val fatValues = binding?.sliderFat?.values
             val sugarValues = binding?.sliderSugar?.values
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
-                proteinValues?.get(0)!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
-                proteinValues[1]!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] =
-                fatValues?.get(0)!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
-                fatValues[1]!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] =
-                sugarValues?.get(0)!!.toInt()
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
-                sugarValues[1]!!.toInt()
+            saveCurrentSetting(proteinValues!!,fatValues!!,sugarValues!!)
             customListener.updateSettingImmediately(nutritionalInformation)
             fragmentFinish()
         }
@@ -257,6 +246,40 @@ class FragmentSettingMain : Fragment() {
                 binding?.tvSugarLow?.text = "0"
                 binding?.tvSugarHigh?.text = ceil(maxSugar).toInt().toString()
             }
+        }
+    }
+
+    private fun saveCurrentSetting(
+        proteinValues: List<Float>,
+        fatValues: List<Float>,
+        sugarValues: List<Float>
+    ) {
+        if (proteinValues.size == 2) {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
+                proteinValues[0].toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
+                proteinValues[1].toInt()
+        } else {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] = 0
+        }
+        if (fatValues.size == 2) {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] =
+                fatValues[0].toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
+                fatValues[1].toInt()
+        } else {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] = 0
+        }
+        if (sugarValues.size == 2) {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] =
+                sugarValues[0].toInt()
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
+                sugarValues[1].toInt()
+        } else {
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] = 0
         }
     }
 
