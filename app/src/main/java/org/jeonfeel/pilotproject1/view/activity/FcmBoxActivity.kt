@@ -13,8 +13,5 @@ class FcmBoxActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = FcmBoxActivityBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-
-
-
     }
 }

@@ -10,18 +10,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
-import org.jeonfeel.pilotproject1.utils.MyFirebaseMessagingService
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
@@ -49,9 +45,9 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     private fun initActivity() {
         initObserver()
         initListener()
-        MyFirebaseMessagingService()
 
         mainActivityViewModel.loadData()
+        onFCMIntent()
     }
 
     /**
@@ -131,15 +127,14 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
 
         binding.btnMessageBoxMain.setOnClickListener {
-            val intent = Intent(this, FcmBoxActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, FcmBoxActivity::class.java))
         }
     }
 
     private fun initViewPager() {
         viewPagerAdapter = ViewPagerAdapter(
             this,
-            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9
+            mainActivityViewModel.categoryLiveData.value?.size ?: 9
         )
         binding.viewPager2.adapter = viewPagerAdapter
     }
@@ -160,12 +155,24 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         }
     }
 
-    fun getCurrentText(): String {
-        return binding.edittextSearchMain.text.toString()
+    fun onFCMIntent() {
+        val t = intent.extras
+        if (t != null) {
+            startActivity(Intent(this,Class.forName(t.getString("link")!!)))
+        }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val link = intent?.getStringExtra("link") ?: ""
+        if (link != "") {
+            val newIntent = Intent(this, Class.forName(link))
+            startActivity(newIntent)
+        }
     }
 
     private val startForResult =

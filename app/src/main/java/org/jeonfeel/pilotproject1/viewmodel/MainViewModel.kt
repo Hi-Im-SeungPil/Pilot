@@ -100,7 +100,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
 
             for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
-                Log.d(TAG, jsonArrayStarbucksMenu[i].toString())
                 val sampleItem =
                     gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
                 starbucksMenuDTOs.add(sampleItem)

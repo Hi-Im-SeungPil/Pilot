@@ -6,18 +6,19 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
-import android.net.Uri
+import android.os.Build
+import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.view.activity.FcmBoxActivity
+import org.jeonfeel.pilotproject1.view.activity.MainActivity
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
+class FirebaseMessagingService : FirebaseMessagingService() {
 
-    private val TAG = MyFirebaseMessagingService::class.java.simpleName
+    private val TAG = FirebaseMessagingService::class.java.simpleName
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
@@ -32,34 +33,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onNewToken(str)
 
         Log.e(TAG, "token => $str")
-//        sendSever()
     }
-
-//    private fun getToken() {
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener OnCompleteListener@{ task ->
-//            if (!task.isSuccessful) {
-//                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-//                return@OnCompleteListener
-//            }
-//            val token = task.result
-//            Log.d(TAG, token)
-//        }
-//    }
 
     private fun sendNotification(remoteMessage: RemoteMessage) {
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
         val messageTitle = remoteMessage.data["title"]
         val messageBody = remoteMessage.data["body"]
+        val link = remoteMessage.data["link"] ?: ""
 
-//        startActivity(intent)
-//        val intent = Intent(this,FcmBoxActivity::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val intent = Intent(this, Class.forName(remoteMessage.data["link"]!!))
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra("link",link)
 
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(this, 11, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.img_circle_2x)
