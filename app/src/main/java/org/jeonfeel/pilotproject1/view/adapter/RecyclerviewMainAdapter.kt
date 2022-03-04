@@ -91,7 +91,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-                notifyDataSetChanged()
+//                notifyDataSetChanged()
             }
         }
     }

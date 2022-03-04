@@ -14,13 +14,12 @@ import org.jeonfeel.pilotproject1.databinding.Viewpager2ItemBinding
 import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
 import org.jeonfeel.pilotproject1.view.activity.MainActivity
 
-
 class ViewPagerAdapter(private val context: Context, private val itemCount: Int) :
     RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
 
     private val TAG = ViewPagerAdapter::class.java.simpleName
-    val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
     private lateinit var binding: Viewpager2ItemBinding
+    val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
 //    private var allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
 //    private var adapters = ArrayList<RecyclerviewMainAdapter>()
 
@@ -64,11 +63,10 @@ class ViewPagerAdapter(private val context: Context, private val itemCount: Int)
         fun itemInit() {
             val gridLayoutManager = GridLayoutManagerWrap(context, 2)
             binding.RecyclerviewMain.layoutManager = gridLayoutManager
-//            recyclerviewMainAdapter.setRecyclerViewMainItem(allCoffee[adapterPosition])
             binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
-            Log.d(TAG, adapterPosition.toString())
 
-//            adapters.add(recyclerviewMainAdapter)
+            Log.d(TAG, "adapterPosition => ${adapterPosition.toString()}")
+            Log.d(TAG, "layoutPosition => ${layoutPosition.toString()}")
         }
 
 //        override fun search(str: String) {

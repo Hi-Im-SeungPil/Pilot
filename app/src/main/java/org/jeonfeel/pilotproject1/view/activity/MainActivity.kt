@@ -56,6 +56,13 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     private fun initObserver() {
         mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        mainActivityViewModel.categoryLiveData.observe(this, Observer {
+            initViewPager()
+            TabLayoutMediator(binding.tablayoutMain, binding.viewPager2) { tab, position ->
+                addTabLayoutCategory(position - 1, tab)
+            }.attach()
+        })
+
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             viewPagerAdapter.setMainItem(it)
             searchRecyclerviewItem()
@@ -63,13 +70,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
             viewPagerAdapter.updateFavoriteImage(it)
-        })
-
-        mainActivityViewModel.categoryLiveData.observe(this, Observer {
-            initViewPager()
-            TabLayoutMediator(binding.tablayoutMain, binding.viewPager2) { tab, position ->
-                addTabLayoutCategory(position - 1, tab)
-            }.attach()
         })
     }
 
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     private fun initViewPager() {
         viewPagerAdapter = ViewPagerAdapter(
             this,
-            mainActivityViewModel.categoryLiveData.value?.size ?: 9
+            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9
         )
         binding.viewPager2.adapter = viewPagerAdapter
     }
@@ -148,6 +148,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
+        Log.d(TAG,"categorySize => ${category?.size}")
         if (position == -1) {
             tab.text = "All"
         } else {

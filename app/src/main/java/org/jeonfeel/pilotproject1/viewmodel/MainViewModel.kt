@@ -224,8 +224,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 ceil(it.protein.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowProtein_key)]!!..nutritionalInformation[context.getString(
                     R.string.nutritionalInformation_highProtein_key
                 )]!!
-                        && ceil(it.fat.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowFat_key)]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highFat_key)]!!
-                        && ceil(it.sugars.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowSugar_key)]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highSugar_key)]!!
+                        && ceil(it.fat.toFloat()).toInt() in nutritionalInformation[context.getString(
+                    R.string.nutritionalInformation_lowFat_key
+                )]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highFat_key)]!!
+                        && ceil(it.sugars.toFloat()).toInt() in nutritionalInformation[context.getString(
+                    R.string.nutritionalInformation_lowSugar_key
+                )]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highSugar_key)]!!
             }
         }
         return resultList
