@@ -23,9 +23,6 @@ class FirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        Log.e(TAG, "remoteMessage.data[\"title\"] => ${remoteMessage.data["title"].toString()}")
-        Log.e(TAG, "remoteMessage.data[\"body\"] => ${remoteMessage.data["body"].toString()}")
-
         sendNotification(remoteMessage)
     }
 
@@ -40,13 +37,18 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val messageTitle = remoteMessage.data["title"]
         val messageBody = remoteMessage.data["body"]
-        val link = remoteMessage.data["link"] ?: ""
+        val product_CD = remoteMessage.data["product_CD"] ?: ""
+        val category = remoteMessage.data["category"] ?: ""
+
+        Log.e(TAG, "remoteMessage.data[\"product_CD\"] => ${remoteMessage.data["product_CD"]}")
+        Log.e(TAG, "remoteMessage.data[\"category\"] => ${remoteMessage.data["category"]}")
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.putExtra("link",link)
+        intent.putExtra("category",category)
+        intent.putExtra("product_CD",product_CD)
 
-        val pendingIntent = PendingIntent.getActivity(this, 11, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(this, 11, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.img_circle_2x)

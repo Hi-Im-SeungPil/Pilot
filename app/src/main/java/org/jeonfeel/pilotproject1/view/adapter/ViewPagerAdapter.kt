@@ -18,14 +18,13 @@ class ViewPagerAdapter(private val context: Context, private val itemCount: Int)
     RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
 
     private val TAG = ViewPagerAdapter::class.java.simpleName
-    private lateinit var binding: Viewpager2ItemBinding
     val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
 //    private var allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
 //    private var adapters = ArrayList<RecyclerviewMainAdapter>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
-        binding = Viewpager2ItemBinding.inflate(view, parent, false)
+        val binding = Viewpager2ItemBinding.inflate(view, parent, false)
 
         return ViewHolder(binding)
     }
@@ -44,13 +43,10 @@ class ViewPagerAdapter(private val context: Context, private val itemCount: Int)
 
     fun search(str: String) {
         recyclerviewMainAdapter.filter.filter(str)
-//        test.search(str)
     }
 
     fun setMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
         recyclerviewMainAdapter.setRecyclerViewMainItem(newMenuDTO)
-        binding.RecyclerviewMain.animation = null
-        binding.RecyclerviewMain.smoothScrollToPosition(0)
     }
 
     fun updateFavoriteImage(hash: HashMap<String, Int>) {
@@ -68,10 +64,6 @@ class ViewPagerAdapter(private val context: Context, private val itemCount: Int)
             Log.d(TAG, "adapterPosition => ${adapterPosition.toString()}")
             Log.d(TAG, "layoutPosition => ${layoutPosition.toString()}")
         }
-
-//        override fun search(str: String) {
-//            adapters[(context as MainActivity).getCurrentPosition()].filter.filter(str)
-//        }
     }
 }
 

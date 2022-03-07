@@ -46,8 +46,11 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         initObserver()
         initListener()
 
-        mainActivityViewModel.loadData()
-        onFCMIntent()
+        if (mainActivityViewModel.loadData()) {
+            intent?.extras?.let {
+                backgroundFCM(it)
+            }
+        }
     }
 
     /**
@@ -148,7 +151,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
     private fun addTabLayoutCategory(position: Int, tab: TabLayout.Tab) {
         val category = mainActivityViewModel.getCategory()
-        Log.d(TAG,"categorySize => ${category?.size}")
         if (position == -1) {
             tab.text = "All"
         } else {
@@ -156,11 +158,19 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         }
     }
 
-    fun onFCMIntent() {
-        val t = intent.extras
-        if (t != null) {
-            startActivity(Intent(this,Class.forName(t.getString("link")!!)))
+    fun backgroundFCM(t: Bundle?) {
+        val intent = Intent(this, StarbucksMenuDetailActivity::class.java)
+        val productCD = t?.getString("product_CD")
+        val menuDTO = productCD?.let { mainActivityViewModel.findMenu(it) }
+
+        intent.putExtra("starbucksMenuDTO", menuDTO?.get(0))
+        intent.putExtra("productCD", productCD)
+        if (mainActivityViewModel.favoriteLiveData.value?.get(productCD) != null) {
+            intent.putExtra("favoriteIsChecked", true)
+        } else {
+            intent.putExtra("favoriteIsChecked", false)
         }
+        startForResult.launch(intent)
     }
 
     override fun onBackPressed() {
@@ -169,10 +179,15 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        val link = intent?.getStringExtra("link") ?: ""
-        if (link != "") {
-            val newIntent = Intent(this, Class.forName(link))
-            startActivity(newIntent)
+        val category = intent?.getStringExtra("category") ?: ""
+        val productCD = intent?.getStringExtra("product_CD") ?: ""
+
+        if (category != "" && productCD != "") {
+            val newIntent = mainActivityViewModel.foreGroundFCM(
+                productCD,
+                category
+            )
+            startForResult.launch(newIntent)
         }
     }
 
@@ -198,7 +213,6 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     override fun updateSettingImmediately(nutritionalInformation: HashMap<String, Int>) {
         mainActivityViewModel.updateSettingImmediately(this, nutritionalInformation)
         mainActivityViewModel.tempNutritionalInformation = nutritionalInformation
-        mainActivityViewModel.tempNutritionalInformation
     }
 
     override fun startForActivityResult(intent: Intent) {

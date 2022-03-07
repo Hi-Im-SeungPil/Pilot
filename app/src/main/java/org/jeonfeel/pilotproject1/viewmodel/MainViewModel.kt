@@ -2,6 +2,8 @@ package org.jeonfeel.pilotproject1.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -10,11 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.*
+import okhttp3.Dispatcher
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.repository.MainRepository
+import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.math.ceil
 
 
@@ -44,13 +48,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var maxSugar = 0.0f
     var tempNutritionalInformation = HashMap<String, Int>()
 
-    fun loadData() {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun loadData(): Boolean {
+        return viewModelScope.launch(Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
             getStarbucksMenu(getApplication())
             getFavorites()
-        }
+            joinAll()
+        }.isCompleted
     }
 
     /**
@@ -86,22 +91,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (categoryPosition == -1) {
             for (element in categoryList!!) {
                 val categoryJsonObject = starbucksMenuJsonObject?.getAsJsonObject(element)
-                val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
+                val starbucksMenuJsonArray = categoryJsonObject?.getAsJsonArray("list")
 
-                for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
+                for (i in 0 until starbucksMenuJsonArray?.size()!!) {
                     val sampleItem =
-                        gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
+                        gson.fromJson(starbucksMenuJsonArray[i], StarbucksMenuDTO::class.java)
                     starbucksMenuDTOs.add(sampleItem)
                 }
             }
         } else {
             val categoryJsonObject =
                 starbucksMenuJsonObject?.getAsJsonObject(categoryList?.get(categoryPosition))
-            val jsonArrayStarbucksMenu = categoryJsonObject?.getAsJsonArray("list")
+            val starbucksMenuJsonArray = categoryJsonObject?.getAsJsonArray("list")
 
-            for (i in 0 until jsonArrayStarbucksMenu?.size()!!) {
+            for (i in 0 until starbucksMenuJsonArray?.size()!!) {
                 val sampleItem =
-                    gson.fromJson(jsonArrayStarbucksMenu[i], StarbucksMenuDTO::class.java)
+                    gson.fromJson(starbucksMenuJsonArray[i], StarbucksMenuDTO::class.java)
                 starbucksMenuDTOs.add(sampleItem)
             }
         }
@@ -234,4 +239,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         return resultList
     }
+
+    /**
+     * FCM
+     * */
+
+    fun foreGroundFCM(productCD: String, category: String): Intent? {
+        val newIntent: Intent? = null
+        val gson = Gson()
+        val obj = starbucksMenuJsonObject?.getAsJsonObject(category)
+        val lst = obj?.getAsJsonArray("list")
+
+        val menuDTOJsonElement =
+            lst?.filter { gson.fromJson(it, StarbucksMenuDTO::class.java).product_CD == productCD }
+        val menuDTO = gson.fromJson(menuDTOJsonElement?.get(0), StarbucksMenuDTO::class.java)
+
+        newIntent?.putExtra("starbucksMenuDTO",menuDTO)
+        newIntent?.putExtra("productCD",productCD)
+        if (favoriteLiveData.value?.get(productCD) != null) {
+            newIntent?.putExtra("favoriteIsChecked", true)
+        } else {
+            newIntent?.putExtra("favoriteIsChecked", false)
+        }
+
+        return newIntent
+    }
+
+fun findMenu(product_CD: String): List<StarbucksMenuDTO> {
+    return _starbucksMenuLiveData.value!!.filter {
+        it.product_CD == product_CD
+    }
+}
 }
