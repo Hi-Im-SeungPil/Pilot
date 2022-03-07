@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +17,7 @@ import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
 import org.jeonfeel.pilotproject1.repository.MainRepository
+import org.jeonfeel.pilotproject1.view.activity.MainActivity
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.math.ceil
 
@@ -48,14 +48,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var maxSugar = 0.0f
     var tempNutritionalInformation = HashMap<String, Int>()
 
-    fun loadData(): Boolean {
-        return viewModelScope.launch(Dispatchers.IO) {
+    fun loadData(): Job {
+        return viewModelScope.launch (Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
             getStarbucksMenu(getApplication())
             getFavorites()
-            joinAll()
-        }.isCompleted
+        }
     }
 
     /**
@@ -243,9 +242,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * FCM
      * */
-
-    fun foreGroundFCM(productCD: String, category: String): Intent? {
-        val newIntent: Intent? = null
+    fun foreGroundFCM(context: Context, productCD: String, category: String): Intent? {
+        val newIntent = Intent(context, StarbucksMenuDetailActivity::class.java)
         val gson = Gson()
         val obj = starbucksMenuJsonObject?.getAsJsonObject(category)
         val lst = obj?.getAsJsonArray("list")
@@ -254,20 +252,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             lst?.filter { gson.fromJson(it, StarbucksMenuDTO::class.java).product_CD == productCD }
         val menuDTO = gson.fromJson(menuDTOJsonElement?.get(0), StarbucksMenuDTO::class.java)
 
-        newIntent?.putExtra("starbucksMenuDTO",menuDTO)
-        newIntent?.putExtra("productCD",productCD)
+        newIntent.putExtra("starbucksMenuDTO", menuDTO)
+        newIntent.putExtra("productCD", productCD)
         if (favoriteLiveData.value?.get(productCD) != null) {
-            newIntent?.putExtra("favoriteIsChecked", true)
+            newIntent.putExtra("favoriteIsChecked", true)
         } else {
-            newIntent?.putExtra("favoriteIsChecked", false)
+            newIntent.putExtra("favoriteIsChecked", false)
         }
 
         return newIntent
     }
 
-fun findMenu(product_CD: String): List<StarbucksMenuDTO> {
-    return _starbucksMenuLiveData.value!!.filter {
-        it.product_CD == product_CD
+    fun backgroundFCM(productCD: String, category: String): Intent {
+        val newIntent = Intent(getApplication(), StarbucksMenuDetailActivity::class.java)
+
+        val gson = Gson()
+        val obj = starbucksMenuJsonObject?.getAsJsonObject(category)
+        val lst = obj?.getAsJsonArray("list")
+
+        val menuDTOJsonElement =
+            lst?.filter { gson.fromJson(it, StarbucksMenuDTO::class.java).product_CD == productCD }
+        val menuDTO = gson.fromJson(menuDTOJsonElement?.get(0), StarbucksMenuDTO::class.java)
+
+        newIntent.putExtra("starbucksMenuDTO", menuDTO)
+        newIntent.putExtra("productCD", productCD)
+        if (favoriteLiveData.value?.get(productCD) != null) {
+            newIntent.putExtra("favoriteIsChecked", true)
+        } else {
+            newIntent.putExtra("favoriteIsChecked", false)
+        }
+
+        return newIntent
     }
-}
 }
