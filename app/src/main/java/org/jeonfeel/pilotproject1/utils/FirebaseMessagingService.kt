@@ -45,10 +45,15 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.putExtra("category",category)
-        intent.putExtra("product_CD",product_CD)
+        intent.putExtra("category", category)
+        intent.putExtra("product_CD", product_CD)
 
-        val pendingIntent = PendingIntent.getActivity(this, 11, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            11,
+            intent,
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.img_circle_2x)

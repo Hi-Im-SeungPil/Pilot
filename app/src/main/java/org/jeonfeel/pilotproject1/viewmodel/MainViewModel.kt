@@ -49,7 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var tempNutritionalInformation = HashMap<String, Int>()
 
     fun loadData(): Job {
-        return viewModelScope.launch (Dispatchers.IO) {
+        return viewModelScope.launch(start = CoroutineStart.LAZY, context = Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
             getStarbucksMenu(getApplication())
@@ -178,6 +178,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return resultList
     }
 
+    // Fragment에서 즉시 update
     fun updateSettingImmediately(context: Context, nutritionalInformation: HashMap<String, Int>) {
         val settingDTO = Shared.getSettingDTO(context)
         val sortInfo = settingDTO.sortInfo
@@ -193,6 +194,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _starbucksMenuLiveData.value = resultList
     }
 
+    // sorting List
     private fun sortList(
         starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,
         context: Context,
@@ -208,6 +210,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return resultList
     }
 
+    // caffeine filter
     private fun filterCaffeine(
         resultList: List<StarbucksMenuDTO>,
         onCaffeineFilter: Boolean
@@ -218,6 +221,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return resultList
     }
 
+    // 단백질, 지방, 설탕 filter
     private fun filterNutritionalInformation(
         context: Context,
         resultList: List<StarbucksMenuDTO>,
@@ -242,8 +246,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * FCM
      * */
-    fun foreGroundFCM(context: Context, productCD: String, category: String): Intent? {
-        val newIntent = Intent(context, StarbucksMenuDetailActivity::class.java)
+    fun foreGroundFCM(productCD: String, category: String): Intent? {
+        val newIntent = Intent(getApplication(), StarbucksMenuDetailActivity::class.java)
         val gson = Gson()
         val obj = starbucksMenuJsonObject?.getAsJsonObject(category)
         val lst = obj?.getAsJsonArray("list")
@@ -265,7 +269,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun backgroundFCM(productCD: String, category: String): Intent {
         val newIntent = Intent(getApplication(), StarbucksMenuDetailActivity::class.java)
-
         val gson = Gson()
         val obj = starbucksMenuJsonObject?.getAsJsonObject(category)
         val lst = obj?.getAsJsonArray("list")
@@ -276,7 +279,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         newIntent.putExtra("starbucksMenuDTO", menuDTO)
         newIntent.putExtra("productCD", productCD)
-        if (favoriteLiveData.value?.get(productCD) != null) {
+        if (favorites?.get(productCD) != null) {
             newIntent.putExtra("favoriteIsChecked", true)
         } else {
             newIntent.putExtra("favoriteIsChecked", false)
