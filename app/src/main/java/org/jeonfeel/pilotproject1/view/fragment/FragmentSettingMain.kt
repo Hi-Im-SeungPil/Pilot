@@ -55,19 +55,19 @@ class FragmentSettingMain : Fragment() {
     }
 
     private fun initSetting() {
-        isCaffeine = Shared.getDeCaffeine(requireActivity())
+        isCaffeine = Shared.getDeCaffeine()
         binding?.switchCaffeine?.isChecked = isCaffeine
 
-        sortInfo = Shared.getSort(requireActivity())
+        sortInfo = Shared.getSort()
         when (sortInfo) {
-            resources.getInteger(R.integer.SORT_BASIC) -> {
-                binding?.radiogroupFragmentSettingMainNormal?.isChecked = true
+            Shared.SORT_BASIC -> {
+                binding?.rbtnFragmentSettingMainNormal?.isChecked = true
             }
-            resources.getInteger(R.integer.SORT_HIGH_KCAL) -> {
-                binding?.radiogroupFragmentSettingMainHighkcal?.isChecked = true
+            Shared.SORT_HIGH_KCAL -> {
+                binding?.rbtnFragmentSettingMainHighkcal?.isChecked = true
             }
-            resources.getInteger(R.integer.SORT_LOW_KCAL) -> {
-                binding?.radiogroupFragmentSettingMainLowkcal?.isChecked = true
+            Shared.SORT_LOW_KCAL -> {
+                binding?.rbtnFragmentSettingMainLowkcal?.isChecked = true
             }
         }
         initSlider()
@@ -77,13 +77,13 @@ class FragmentSettingMain : Fragment() {
      * 리스너
      * */
     private fun initListener() {
-        binding?.buttonFragmentSettingMainClose?.setOnClickListener {
+        binding?.btnFragmentSettingMainClose?.setOnClickListener {
             fragmentFinish()
         }
 
-        binding?.buttonAdmitFragmentSettingMain?.setOnClickListener {
-            Shared.setDeCaffeine(requireActivity(), isCaffeine)
-            Shared.setSort(requireActivity(), sortInfo)
+        binding?.btnAdmitFragmentSettingMain?.setOnClickListener {
+            Shared.setDeCaffeine(isCaffeine)
+            Shared.setSort(sortInfo)
             val proteinValues = binding?.sliderProtein?.values
             val fatValues = binding?.sliderFat?.values
             val sugarValues = binding?.sliderSugar?.values
@@ -92,14 +92,14 @@ class FragmentSettingMain : Fragment() {
             fragmentFinish()
         }
 
-        binding?.radiogroupFragmentSettingMain?.setOnCheckedChangeListener { radioGroup: RadioGroup, i: Int ->
+        binding?.rgFragmentSettingMain?.setOnCheckedChangeListener { radioGroup: RadioGroup, i: Int ->
             when (radioGroup.checkedRadioButtonId) {
-                binding?.radiogroupFragmentSettingMainLowkcal?.id -> sortInfo =
-                    resources.getInteger(R.integer.SORT_LOW_KCAL)
-                binding?.radiogroupFragmentSettingMainHighkcal?.id -> sortInfo =
-                    resources.getInteger(R.integer.SORT_HIGH_KCAL)
-                binding?.radiogroupFragmentSettingMainNormal?.id -> sortInfo =
-                    resources.getInteger(R.integer.SORT_BASIC)
+                binding?.rbtnFragmentSettingMainLowkcal?.id -> sortInfo =
+                    Shared.SORT_LOW_KCAL
+                binding?.rbtnFragmentSettingMainHighkcal?.id -> sortInfo =
+                    Shared.SORT_HIGH_KCAL
+                binding?.rbtnFragmentSettingMainNormal?.id -> sortInfo =
+                    Shared.SORT_BASIC
             }
         }
 
@@ -129,18 +129,18 @@ class FragmentSettingMain : Fragment() {
 
         binding?.switchCaffeine?.setOnCheckedChangeListener { button, _ ->
             isCaffeine = if (button.isChecked) {
-                resources.getBoolean(R.bool.IS_CAFFEINE)
+                Shared.CONTAINS_CAFFEINE
             } else {
-                resources.getBoolean(R.bool.IS_NOT_CAFFEINE)
+                Shared.NOT_CONTAINS_CAFFEINE
             }
         }
 
-        binding?.buttonResetFragmentSettingMain?.setOnClickListener {
+        binding?.btnResetFragmentSettingMain?.setOnClickListener {
             val dialogBuilder = AlertDialog.Builder(requireActivity())
             dialogBuilder.setTitle("초기화")
                 .setMessage("ㄹㅇ?")
                 .setPositiveButton("ㅇㅇ") { _, _ ->
-                    Shared.sharedClear(requireActivity())
+                    Shared.sharedClear()
                     nutritionalInformation.clear()
                     initSetting()
                     customListener.updateSettingImmediately(nutritionalInformation)

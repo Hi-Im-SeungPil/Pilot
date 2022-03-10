@@ -4,70 +4,46 @@ import android.content.Context
 import android.content.SharedPreferences
 import org.jeonfeel.pilotproject1.R
 
+object Shared {
+    private const val CAFFEINE_KEY = "isCaffeine"
+    private const val SORT_KEY = "sortKind"
 
-class Shared(val context: Context) {
+    const val SORT_LOW_KCAL = 0
+    const val SORT_HIGH_KCAL = 1
+    const val SORT_BASIC = 2
+    const val CONTAINS_CAFFEINE = true
+    const val NOT_CONTAINS_CAFFEINE = false
 
-    companion object {
-        private var sharedPref: SharedPreferences? = null
-        private fun getSharedInstance(context: Context): SharedPreferences {
-            if (sharedPref == null) {
-                sharedPref = context.getSharedPreferences(
-                    context.getString(R.string.preference_file_key),
-                    Context.MODE_PRIVATE
-                )
-            }
-            return sharedPref!!
-        }
+    private lateinit var sharedPreferencesInstance: SharedPreferences
 
-        fun setDeCaffeine(context: Context, isCaffeine: Boolean) {
-            getSharedInstance(context).let {
-                it.edit()
-                    .putBoolean(context.getString(R.string.saved_de_caffeine_key), isCaffeine)
-                    .apply()
-            }
-        }
+    fun create(context: Context) {
+        sharedPreferencesInstance = context.getSharedPreferences(
+            context.getString(R.string.preference_file_key),
+            Context.MODE_PRIVATE
+        )
+    }
 
-        fun getDeCaffeine(context: Context): Boolean {
-            return getSharedInstance(context).getBoolean(
-                context.getString(R.string.saved_de_caffeine_key),
-                false
-            )
-        }
+    fun setDeCaffeine(isCaffeine: Boolean) {
+        sharedPreferencesInstance.edit()
+            .putBoolean(CAFFEINE_KEY, isCaffeine)
+            .apply()
+    }
 
-        fun setSort(context: Context, sortKind: Int) {
-            getSharedInstance(context).let {
-                it.edit()
-                    .putInt(context.getString(R.string.saved_sort_key), sortKind).apply()
-            }
-        }
+    fun getDeCaffeine(): Boolean {
+        return sharedPreferencesInstance.getBoolean(CAFFEINE_KEY, false)
+    }
 
-        fun getSort(context: Context): Int {
-            return getSharedInstance(context).getInt(context.getString(R.string.saved_sort_key), -1)
-        }
+    fun setSort(sortKind: Int) {
+        sharedPreferencesInstance.edit().putInt(SORT_KEY, sortKind).apply()
+    }
 
-        fun sharedClear(context: Context) {
-            val instance = getSharedInstance(context)
-            instance.let {
-                it.edit().putInt(
-                    context.getString(R.string.saved_sort_key),
-                    context.resources.getInteger(R.integer.SORT_BASIC)
-                ).apply()
-            }
-            instance.let {
-                it.edit().putBoolean(
-                    context.getString(R.string.saved_de_caffeine_key),
-                    context.resources.getBoolean(R.bool.IS_NOT_CAFFEINE)
-                ).apply()
-            }
-        }
+    fun getSort(): Int {
+        return sharedPreferencesInstance.getInt(SORT_KEY, -1)
+    }
 
-        fun getSettingDTO(context: Context): SettingDTO {
-            val instance = getSharedInstance(context)
-            val sortInfo = instance.getInt(context.getString(R.string.saved_sort_key), -1)
-            val isCaffeine =
-                instance.getBoolean(context.getString(R.string.saved_de_caffeine_key), false)
-
-            return SettingDTO(sortInfo, isCaffeine)
-        }
+    fun sharedClear() {
+        sharedPreferencesInstance.edit().putInt(SORT_KEY, SORT_BASIC).apply()
+        sharedPreferencesInstance.edit().putBoolean(CAFFEINE_KEY, NOT_CONTAINS_CAFFEINE).apply()
     }
 }
+

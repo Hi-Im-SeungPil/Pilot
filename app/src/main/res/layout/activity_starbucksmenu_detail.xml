@@ -19,15 +19,15 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageview_detail"
-            coffeeImage="@{starbucks_menu_dto.file_PATH}"
+            android:id="@+id/iv_detail"
+            loadCoffeeImage="@{starbucks_menu_dto.file_PATH}"
             android:layout_width="match_parent"
             android:layout_height="340dp"
             android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_detail_backspace"
+            android:id="@+id/btn_detail_backspace"
             android:layout_width="15dp"
             android:layout_height="25dp"
             android:layout_marginLeft="26dp"
@@ -37,7 +37,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_detail_favorite"
+            android:id="@+id/btn_detail_favorite"
             loadSrc="@{resId}"
             android:layout_width="31dp"
             android:layout_height="31dp"
@@ -54,7 +54,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
-                android:id="@+id/linear_detail"
+                android:id="@+id/ll_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_detail"
@@ -69,7 +69,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/textview_detail_product_name"
+                    android:id="@+id/tv_detail_product_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
@@ -80,7 +80,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textview_detail_product_content"
+                    android:id="@+id/tv_detail_product_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
@@ -91,7 +91,7 @@
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/textview_detail_product_kcal"
+                    android:id="@+id/tv_detail_product_kcal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="31dp"

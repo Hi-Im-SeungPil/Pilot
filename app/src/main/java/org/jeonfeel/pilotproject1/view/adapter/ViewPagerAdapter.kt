@@ -4,23 +4,21 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.Viewpager2ItemBinding
-import org.jeonfeel.pilotproject1.utils.GridLayoutManagerWrap
-import org.jeonfeel.pilotproject1.view.activity.MainActivity
 
-class ViewPagerAdapter(private val context: Context, private val itemCount: Int) :
+class ViewPagerAdapter(
+    private val context: Context,
+    private val allCoffee: ArrayList<ArrayList<StarbucksMenuDTO>>
+) :
     RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
 
     private val TAG = ViewPagerAdapter::class.java.simpleName
-    val recyclerviewMainAdapter = RecyclerviewMainAdapter(context)
-//    private var allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
-//    private var adapters = ArrayList<RecyclerviewMainAdapter>()
+
+    private var adapters = ArrayList<RecyclerviewMainAdapter>()
+    private var currentPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -30,44 +28,60 @@ class ViewPagerAdapter(private val context: Context, private val itemCount: Int)
     }
 
     override fun onBindViewHolder(holder: ViewPagerAdapter.ViewHolder, position: Int) {
-        holder.itemInit()
+        holder.itemInit(position)
     }
 
     override fun getItemCount(): Int {
-        return itemCount
+        return allCoffee.size
     }
 
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
     }
 
-    fun search(str: String) {
-        recyclerviewMainAdapter.filter.filter(str)
+    fun setCurrentPosition(currentPosition: Int) {
+        this.currentPosition = currentPosition
+        Log.e("TAG", this.currentPosition.toString())
     }
 
-    fun setMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
-        recyclerviewMainAdapter.setRecyclerViewMainItem(newMenuDTO)
+    fun search(str: String) {
+        adapters[currentPosition].filter.filter(str)
+    }
+
+    fun setFavorite(favorites: HashMap<String, Int>) {
+        if(favorites.size != 0){
+            Log.d(TAG,favorites.values.groupBy { favorites.keys }.toString())
+        }
     }
 
     fun updateFavoriteImage(hash: HashMap<String, Int>) {
-        recyclerviewMainAdapter.updateFavoriteImage(hash)
+        adapters[currentPosition].updateFavoriteImage(hash)
     }
 
     inner class ViewHolder(private val binding: Viewpager2ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun itemInit() {
+        fun itemInit(position: Int) {
+            val recyclerviewMainAdapter = RecyclerviewMainAdapter(context, allCoffee[position])
             val gridLayoutManager = GridLayoutManagerWrap(context, 2)
-            binding.RecyclerviewMain.layoutManager = gridLayoutManager
-            binding.RecyclerviewMain.adapter = recyclerviewMainAdapter
+            binding.rvMain.layoutManager = gridLayoutManager
+            binding.rvMain.adapter = recyclerviewMainAdapter
+            if (adapters.size == allCoffee.size) {
+                adapters[adapterPosition] = recyclerviewMainAdapter
+            } else {
+                adapters.add(recyclerviewMainAdapter)
+            }
 
-            Log.d(TAG, "adapterPosition => ${adapterPosition.toString()}")
-            Log.d(TAG, "layoutPosition => ${layoutPosition.toString()}")
+            Log.e(TAG, "adapters size=> ${adapters.size.toString()}")
+            Log.e(TAG, "adapterPosition => ${adapterPosition.toString()}")
         }
     }
 }
 
-interface Test {
-    fun search(str: String)
-}
+class GridLayoutManagerWrap(context: Context?, spanCount: Int) :
+    GridLayoutManager(context, spanCount) {
 
+    override fun supportsPredictiveItemAnimations(): Boolean {
+        return false
+    }
+}

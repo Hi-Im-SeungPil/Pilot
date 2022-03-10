@@ -4,7 +4,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 
-@BindingAdapter("coffeeImage")
+@BindingAdapter("loadCoffeeImage")
 fun loadCoffeeImage(view: ImageView, imageUrl: String) {
     Glide.with(view.context)
         .load(imageUrl)

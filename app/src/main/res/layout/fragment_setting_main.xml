@@ -8,7 +8,7 @@
     tools:context=".view.fragment.FragmentSettingMain">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_fragment_setting_main"
+        android:id="@+id/cl_fragment_setting_top_bar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/shape_underline_edittext"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_fragment_setting_main_close"
+            android:id="@+id/btn_fragment_setting_main_close"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
@@ -38,7 +38,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/linear_toggle_caffeine"
+            android:id="@+id/ll_toggle_caffeine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -60,8 +60,8 @@
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/linear_fragmentSetting_bottom"
-        app:layout_constraintTop_toBottomOf="@id/constraint_fragment_setting_main">
+        app:layout_constraintBottom_toTopOf="@+id/ll_fragmentSetting_bottom"
+        app:layout_constraintTop_toBottomOf="@id/cl_fragment_setting_top_bar">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,7 +69,7 @@
             android:layout_height="wrap_content">
 
             <RadioGroup
-                android:id="@+id/radiogroup_fragment_setting_main"
+                android:id="@+id/rg_fragment_setting_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_setting_sort"
@@ -77,7 +77,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <RadioButton
-                    android:id="@+id/radiogroup_fragment_setting_main_lowkcal"
+                    android:id="@+id/rbtn_fragment_setting_main_lowkcal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -92,7 +92,7 @@
                     android:textSize="20sp" />
 
                 <RadioButton
-                    android:id="@+id/radiogroup_fragment_setting_main_normal"
+                    android:id="@+id/rbtn_fragment_setting_main_normal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -108,7 +108,7 @@
                     android:textSize="20sp" />
 
                 <RadioButton
-                    android:id="@+id/radiogroup_fragment_setting_main_highkcal"
+                    android:id="@+id/rbtn_fragment_setting_main_highkcal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -124,12 +124,12 @@
             </RadioGroup>
 
             <LinearLayout
-                android:id="@+id/linear_rangeSlider_protein"
+                android:id="@+id/ll_rangeSlider_protein"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/radiogroup_fragment_setting_main">
+                app:layout_constraintTop_toBottomOf="@+id/rg_fragment_setting_main">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -182,12 +182,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linear_rangeSlider_fat"
+                android:id="@+id/ll_rangeSlider_fat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_protein">
+                app:layout_constraintTop_toBottomOf="@+id/ll_rangeSlider_protein">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -239,12 +239,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linear_rangeSlider_sugar"
+                android:id="@+id/ll_rangeSlider_sugar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/linear_rangeSlider_fat">
+                app:layout_constraintTop_toBottomOf="@+id/ll_rangeSlider_fat">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -302,7 +302,7 @@
 
 
     <LinearLayout
-        android:id="@+id/linear_fragmentSetting_bottom"
+        android:id="@+id/ll_fragmentSetting_bottom"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginLeft="10dp"
@@ -311,7 +311,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_reset_fragment_setting_main"
+            android:id="@+id/btn_reset_fragment_setting_main"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="5dp"
@@ -324,7 +324,7 @@
             app:layout_constraintLeft_toLeftOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/button_admit_fragment_setting_main"
+            android:id="@+id/btn_admit_fragment_setting_main"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"

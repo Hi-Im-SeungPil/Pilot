@@ -11,7 +11,7 @@
     </data>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardview_recyclerview_main_item"
+        android:id="@+id/cv_recyclerview_main_item"
         android:layout_width="match_parent"
         android:layout_height="262dp"
         android:layout_marginLeft="12dp"
@@ -29,8 +29,8 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/imageview_recyclerview_main_item"
-                coffeeImage="@{item_recyclerview_main.file_PATH}"
+                android:id="@+id/iv_recyclerview_main_item"
+                loadCoffeeImage="@{item_recyclerview_main.file_PATH}"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:scaleType="fitXY" />
@@ -50,7 +50,7 @@
                     android:textSize="11sp" />
 
                 <TextView
-                    android:id="@+id/textview_recyclerview_main_item_productName"
+                    android:id="@+id/tv_recyclerview_main_item_productName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="11dp"
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/textview_recyclerview_main_item_kcal"
+                        android:id="@+id/tv_recyclerview_main_item_kcal"
                         android:layout_width="64.02dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="11dp"
@@ -82,7 +82,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/imageview_recyclerview_main_item_favorite"
+                        android:id="@+id/iv_recyclerview_main_item_favorite"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_marginRight="13dp"

@@ -15,27 +15,41 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import org.jeonfeel.pilotproject1.R
+import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
 import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingListener,
+class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingListener,
     RecyclerViewMainListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainActivityViewModel: MainViewModel
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val intent = result.data
+                val productCD: String = intent!!.getStringExtra("productCD").toString()
+                val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
+
+                mainActivityViewModel.checkFavorite(productCD, favoriteIsChecked, binding.tlMain.selectedTabPosition)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,20 +74,12 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
     private fun initObserver() {
         mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        mainActivityViewModel.categoryLiveData.observe(this, Observer {
-            initViewPager()
-            TabLayoutMediator(binding.tablayoutMain, binding.viewPager2) { tab, position ->
-                addTabLayoutCategory(position - 1, tab)
-            }.attach()
+        mainActivityViewModel.favoriteLiveData.observe(this, Observer {
+            viewPagerAdapter.setFavorite(it)
         })
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
-            viewPagerAdapter.setMainItem(it)
-            searchRecyclerviewItem()
-        })
-
-        mainActivityViewModel.favoriteLiveData.observe(this, Observer {
-            viewPagerAdapter.updateFavoriteImage(it)
+            initViewPager(it)
         })
     }
 
@@ -82,11 +88,10 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
      */
     @SuppressLint("ClickableViewAccessibility")
     private fun initListener() {
-        binding.tablayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        binding.tlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                mainActivityViewModel.updateStarbucksMenu(tab!!.position - 1)
+                viewPagerAdapter.setCurrentPosition(tab!!.position)
                 searchRecyclerviewItem()
-                mainActivityViewModel.tempNutritionalInformation.clear()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -96,7 +101,7 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
         })
 
-        binding.edittextSearchMain.addTextChangedListener(object : TextWatcher {
+        binding.etSearchMain.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(str: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -108,11 +113,11 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             }
         })
 
-        binding.buttonAdjust.setOnClickListener {
+        binding.btnAdjustMain.setOnClickListener {
             val animation =
                 AnimationUtils.loadAnimation(this, R.anim.anim_slide_up)
-            binding.framelayoutSettingMain.animation = animation
-            binding.framelayoutSettingMain.visibility = View.VISIBLE
+            binding.flSettingMain.animation = animation
+            binding.flSettingMain.visibility = View.VISIBLE
 
             val fragment = FragmentSettingMain.newInstance()
             fragment.setSliderValue(
@@ -123,28 +128,28 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
             )
             supportFragmentManager
                 .beginTransaction()
-                .replace(binding.framelayoutSettingMain.id, fragment)
+                .replace(binding.flSettingMain.id, fragment)
                 .commit()
         }
 
-        binding.framelayoutSettingMain.setOnTouchListener { _, _ -> true }
+        binding.flSettingMain.setOnTouchListener { _, _ -> true }
 
         binding.btnMessageBoxMain.setOnClickListener {
             startActivity(Intent(this, FcmBoxActivity::class.java))
         }
     }
 
-    private fun initViewPager() {
-        viewPagerAdapter = ViewPagerAdapter(
-            this,
-            mainActivityViewModel.categoryLiveData.value?.size?.plus(1) ?: 9
-        )
+    private fun initViewPager(allCoffeeList: ArrayList<ArrayList<StarbucksMenuDTO>>) {
+        viewPagerAdapter = ViewPagerAdapter(this, allCoffeeList)
         binding.viewPager2.adapter = viewPagerAdapter
+        TabLayoutMediator(binding.tlMain, binding.viewPager2) { tab, position ->
+            addTabLayoutCategory(position - 1, tab)
+        }.attach()
     }
 
     private fun searchRecyclerviewItem() {
-        if (binding.edittextSearchMain.length() != 0) {
-            val currentString = binding.edittextSearchMain.text.toString()
+        if (binding.etSearchMain.length() != 0) {
+            val currentString = binding.etSearchMain.text.toString()
             viewPagerAdapter.search(currentString)
         }
     }
@@ -242,23 +247,11 @@ class MainActivity : AppCompatActivity(), FragmentSettingMain.FragmentSettingLis
         }
     }
 
-    // Intent 결과
-    private val startForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                val intent = result.data
-                val productCD: String = intent!!.getStringExtra("productCD").toString()
-                val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
-
-                mainActivityViewModel.checkFavorite(productCD, favoriteIsChecked)
-            }
-        }
-
     override fun frameLayoutGone() {
         val animation =
             AnimationUtils.loadAnimation(this, R.anim.anim_slide_down)
-        binding.framelayoutSettingMain.animation = animation
-        binding.framelayoutSettingMain.visibility = View.GONE
+        binding.flSettingMain.animation = animation
+        binding.flSettingMain.visibility = View.GONE
     }
 
     override fun updateSettingImmediately(nutritionalInformation: HashMap<String, Int>) {

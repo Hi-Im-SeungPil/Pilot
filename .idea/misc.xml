@@ -9,6 +9,7 @@
         <entry key="../../../../layout/compose-model-1646713529022.xml" value="0.31841216216216217" />
         <entry key="../../../../layout/compose-model-1646715992475.xml" value="0.31841216216216217" />
         <entry key="../../../../layout/compose-model-1646716424193.xml" value="0.19074074074074074" />
+        <entry key="../../../../layout/compose-model-1646887160197.xml" value="0.31756756756756754" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/drawable/item_recyclerview_main_cardview.xml" value="0.3074074074074074" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/drawable/main_edittext.xml" value="0.1" />
         <entry key="..\:/Users/thrhc/AndroidStudioProjects/Pilot/app/src/main/res/drawable/main_tablayout_backgroud_unselected.xml" value="0.3074074074074074" />
@@ -38,9 +39,11 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_starbucksmenu_detail.xml" value="0.3074792243767313" />
         <entry key="app/src/main/res/layout/fcm_box_activity.xml" value="0.36614583333333334" />
+        <entry key="app/src/main/res/layout/fragment_screen_slide_page.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_setting_main.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_setting_main2.xml" value="0.36614583333333334" />
         <entry key="app/src/main/res/layout/item_recyclerview_main.xml" value="0.11" />
+        <entry key="app/src/main/res/layout/viewpager2_item.xml" value="0.17806484295845998" />
       </map>
     </option>
   </component>

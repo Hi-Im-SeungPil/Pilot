@@ -35,12 +35,12 @@ class StarbucksMenuDetailActivity : AppCompatActivity() {
      * */
     @Suppress("RedundantIf")
     private fun initListener() {
-        binding.buttonDetailBackspace.setOnClickListener {
+        binding.btnDetailBackspace.setOnClickListener {
             setResult()
             finish()
         }
 
-        binding.buttonDetailFavorite.setOnClickListener {
+        binding.btnDetailFavorite.setOnClickListener {
             var imgRes = 0
             if (!favoriteIsChecked) {
                 favoriteIsChecked = true

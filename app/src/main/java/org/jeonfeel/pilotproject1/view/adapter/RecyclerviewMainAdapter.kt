@@ -3,31 +3,33 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.R
+import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
-import org.jeonfeel.pilotproject1.data.sharedpreferences.Shared
-import org.jeonfeel.pilotproject1.view.activity.MainActivity
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
+import java.util.Collections.addAll
 import kotlin.collections.ArrayList
 
-class RecyclerviewMainAdapter(private val context: Context) :
+class RecyclerviewMainAdapter(private val context: Context,private val item: ArrayList<StarbucksMenuDTO>) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
 
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
-    private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
+    private var recyclerViewMainItem:ArrayList<StarbucksMenuDTO> = arrayListOf()
     private var filteredList = recyclerViewMainItem
     private var favoriteHashMap = hashMapOf<String, Int>()
     private var selectedItemPosition: Int? = null
+
+    init {
+        recyclerViewMainItem.addAll(item)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -50,21 +52,15 @@ class RecyclerviewMainAdapter(private val context: Context) :
         return super.getItemViewType(position)
     }
 
-    fun setRecyclerViewMainItem(newMenuDTO: ArrayList<StarbucksMenuDTO>) {
-        val diffResult = DiffUtil.calculateDiff(
-            RecyclerviewMainDiffUtil(recyclerViewMainItem, newMenuDTO),
-            false
-        )
-        recyclerViewMainItem.clear()
-        recyclerViewMainItem.addAll(newMenuDTO)
-        diffResult.dispatchUpdatesTo(this)
-    }
-
     fun updateFavoriteImage(newHashMap: HashMap<String, Int>) {
         favoriteHashMap = newHashMap
         if (selectedItemPosition != null) {
             notifyItemChanged(selectedItemPosition!!)
         }
+    }
+
+    fun setFavorites(favorites: HashMap<String,Int>) {
+        this.favoriteHashMap = favorites
     }
 
     override fun getFilter(): Filter {
@@ -91,7 +87,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
                 filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-//                notifyDataSetChanged()
+                notifyDataSetChanged()
             }
         }
     }
@@ -100,7 +96,7 @@ class RecyclerviewMainAdapter(private val context: Context) :
         RecyclerView.ViewHolder(binding.root) {
         //리사이클러뷰 아이템 바인딩
         fun itemBinding(starbucksMenuDTO: StarbucksMenuDTO) {
-            binding.textviewRecyclerviewMainItemProductName.setHorizontallyScrolling(true)
+            binding.tvRecyclerviewMainItemProductName.setHorizontallyScrolling(true)
             with(binding) {
                 binding.itemRecyclerviewMain = starbucksMenuDTO
                 executePendingBindings()
@@ -110,14 +106,14 @@ class RecyclerviewMainAdapter(private val context: Context) :
         fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
             val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
             if (favorite == null) {
-                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
+                binding.ivRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
             } else if (favorite == 0) {
-                binding.imageviewRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
+                binding.ivRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_2x)
             }
         }
 
         fun setItemClickListener(starbucksMenuDTO: StarbucksMenuDTO) {
-            binding.cardviewRecyclerviewMainItem.setOnClickListener {
+            binding.cvRecyclerviewMainItem.setOnClickListener {
                 val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
                 intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
                 intent.putExtra("productCD", starbucksMenuDTO.product_CD)
@@ -132,8 +128,8 @@ class RecyclerviewMainAdapter(private val context: Context) :
         }
 
         fun setMarquee() {
-            binding.cardviewRecyclerviewMainItem.setOnLongClickListener {
-                binding.textviewRecyclerviewMainItemProductName.isSelected = true
+            binding.cvRecyclerviewMainItem.setOnLongClickListener {
+                binding.cvRecyclerviewMainItem.isSelected = true
                 true
             }
         }
