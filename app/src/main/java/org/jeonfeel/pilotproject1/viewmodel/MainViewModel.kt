@@ -31,6 +31,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var starbucksMenuJsonObject: JsonObject? = null
     private var categoryList: List<String>? = null
     private var favorites: HashMap<String, Int>? = null
+    private val starbucksMenuList: ArrayList<ArrayList<StarbucksMenuDTO>> = arrayListOf()
+    private val originalList: ArrayList<ArrayList<StarbucksMenuDTO>> = arrayListOf()
 
     private val _starbucksMenuLiveData: MutableLiveData<ArrayList<ArrayList<StarbucksMenuDTO>>> =
         MutableLiveData<ArrayList<ArrayList<StarbucksMenuDTO>>>()
@@ -40,17 +42,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         MutableLiveData<HashMap<String, Int>>()
     val favoriteLiveData: LiveData<HashMap<String, Int>> get() = _favoriteLiveData
 
-    var maxProtein = 0.0f
-    var maxFat = 0.0f
-    var maxSugar = 0.0f
     var tempNutritionalInformation = HashMap<String, Int>()
 
     fun loadData(): Job {
         return viewModelScope.launch(start = CoroutineStart.LAZY, context = Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
-            getAllStarbucksMenu()
             getFavorites()
+            getAllStarbucksMenu()
         }
     }
 
@@ -78,7 +77,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun getAllStarbucksMenu() {
         val gson = Gson()
-        val allMenuList: ArrayList<ArrayList<StarbucksMenuDTO>> = arrayListOf()
         val allStarbucksMenuDTO = ArrayList<StarbucksMenuDTO>()
 
         for (element in categoryList!!) {
@@ -92,11 +90,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 starbucksMenuDTOs.add(sampleItem)
                 allStarbucksMenuDTO.add(sampleItem)
             }
-            allMenuList.add(starbucksMenuDTOs)
+            starbucksMenuList.add(starbucksMenuDTOs)
         }
-        allMenuList.add(0,allStarbucksMenuDTO)
+        starbucksMenuList.add(0, allStarbucksMenuDTO)
+        originalList.addAll(starbucksMenuList)
 
-        _starbucksMenuLiveData.postValue(allMenuList)
+        _starbucksMenuLiveData.postValue(starbucksMenuList)
     }
 
     /**
@@ -110,7 +109,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         favorites = favoritesHashMap
         _favoriteLiveData.postValue(favorites)
-        Log.e(TAG,"favorites => ${favorites.toString()}")
+        Log.e(TAG, "favorites => ${favorites.toString()}")
     }
 
     fun checkFavorite(productCD: String, favoriteIsChecked: Boolean, selectedTabPosition: Int) {
@@ -144,14 +143,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 세팅
      * */
-    private fun updateSetting(
-        starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,
+    fun updateSetting(
+        tabPosition: Int
     ): ArrayList<StarbucksMenuDTO> {
         val sortInfo = Shared.getSort()
         val isCaffeine = Shared.getDeCaffeine()
 
         val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
-        var tempList = sortList(starbucksMenuDTOs, sortInfo)
+        var tempList = sortList(sortInfo, tabPosition)
         tempList = filterCaffeine(tempList, isCaffeine)
 
         resultList.addAll(tempList)
@@ -160,33 +159,38 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Fragment에서 즉시 update
-    fun updateSettingImmediately(context: Context, nutritionalInformation: HashMap<String, Int>) {
-//        val sortInfo = Shared.getSort()
-//        val isCaffeine = Shared.getDeCaffeine()
-//
-//        val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
-//        var tempList = sortList(, sortInfo)
-//        tempList = filterCaffeine(tempList, isCaffeine)
-//        tempList = filterNutritionalInformation(context, tempList, nutritionalInformation)
-//
-//        resultList.addAll(tempList)
-//
-//        _starbucksMenuLiveData.value = resultList
+    fun updateSettingImmediately(
+        context: Context,
+        nutritionalInformation: HashMap<String, Int>,
+        tabPosition: Int
+    ): ArrayList<StarbucksMenuDTO> {
+        val sortInfo = Shared.getSort()
+        val isCaffeine = Shared.getDeCaffeine()
+
+        val resultList: ArrayList<StarbucksMenuDTO> = arrayListOf()
+        var tempList = sortList(sortInfo, tabPosition)
+        tempList = filterCaffeine(tempList, isCaffeine)
+        tempList = filterNutritionalInformation(context, tempList, nutritionalInformation)
+
+        resultList.addAll(tempList)
+
+        return resultList
     }
 
     // sorting List
     private fun sortList(
-        starbucksMenuDTOs: ArrayList<StarbucksMenuDTO>,
-        sortInfo: Int
+        sortInfo: Int,
+        tabPosition: Int
     ): List<StarbucksMenuDTO> {
-//        val resultList = when (sortInfo) {
-//            Shared.SORT_LOW_KCAL -> starbucksMenuDTOs.sortedBy { it.kcal.toInt() }
-//            Shared.SORT_HIGH_KCAL -> starbucksMenuDTOs.sortedByDescending { it.kcal.toInt() }
-//            else -> {
-//                originalList
-//            }
-//        }
-        return emptyList()
+        val resultList = ArrayList<StarbucksMenuDTO>()
+        resultList.addAll(originalList[tabPosition])
+
+        when (sortInfo) {
+            Shared.SORT_LOW_KCAL -> resultList.sortBy { it.kcal.toInt() }
+            Shared.SORT_HIGH_KCAL -> resultList.sortByDescending { it.kcal.toInt() }
+        }
+
+        return resultList
     }
 
     // caffeine filter
@@ -220,6 +224,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         return resultList
+    }
+
+    fun getProteinMaxValue(tabPosition: Int): Float {
+        return originalList[tabPosition].maxOf { it.protein.toFloat() }
+    }
+
+    fun getFatMaxValue(tabPosition: Int): Float {
+        return originalList[tabPosition].maxOf { it.fat.toFloat() }
+    }
+
+    fun getSugarsMaxValue(tabPosition: Int): Float {
+        return originalList[tabPosition].maxOf { it.sugars.toFloat() }
     }
 
     /**

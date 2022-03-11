@@ -3,7 +3,6 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -11,25 +10,18 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.data.database.entity.Favorite
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
-import java.util.Collections.addAll
 import kotlin.collections.ArrayList
 
-class RecyclerviewMainAdapter(private val context: Context,private val item: ArrayList<StarbucksMenuDTO>) :
+class RecyclerviewMainAdapter(private val context: Context, private val viewPagerAdapter: ViewPagerAdapter) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
 
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
-    private var recyclerViewMainItem:ArrayList<StarbucksMenuDTO> = arrayListOf()
+    private var recyclerViewMainItem:ArrayList<StarbucksMenuDTO> = ArrayList()
     private var filteredList = recyclerViewMainItem
-    private var favoriteHashMap = hashMapOf<String, Int>()
     private var selectedItemPosition: Int? = null
-
-    init {
-        recyclerViewMainItem.addAll(item)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -52,15 +44,18 @@ class RecyclerviewMainAdapter(private val context: Context,private val item: Arr
         return super.getItemViewType(position)
     }
 
-    fun updateFavoriteImage(newHashMap: HashMap<String, Int>) {
-        favoriteHashMap = newHashMap
+    fun setItem(arr: ArrayList<StarbucksMenuDTO>) {
+        recyclerViewMainItem.clear()
+        recyclerViewMainItem.addAll(arr)
+
+        recyclerViewMainItem get() = arr
+        notifyDataSetChanged()
+    }
+
+    fun updateFavoriteImage() {
         if (selectedItemPosition != null) {
             notifyItemChanged(selectedItemPosition!!)
         }
-    }
-
-    fun setFavorites(favorites: HashMap<String,Int>) {
-        this.favoriteHashMap = favorites
     }
 
     override fun getFilter(): Filter {
@@ -86,8 +81,10 @@ class RecyclerviewMainAdapter(private val context: Context,private val item: Arr
             @SuppressLint("NotifyDataSetChanged")
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
-                filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO>
-                notifyDataSetChanged()
+                if (filterResults?.values != null) {
+                    filteredList = filterResults.values as ArrayList<StarbucksMenuDTO>
+                    notifyDataSetChanged()
+                }
             }
         }
     }
@@ -104,7 +101,7 @@ class RecyclerviewMainAdapter(private val context: Context,private val item: Arr
         }
 
         fun setFavoriteImage(starbucksMenuDTO: StarbucksMenuDTO) {
-            val favorite = favoriteHashMap[starbucksMenuDTO.product_CD]
+            val favorite = viewPagerAdapter.getFavorites()[starbucksMenuDTO.product_CD]
             if (favorite == null) {
                 binding.ivRecyclerviewMainItemFavorite.setImageResource(R.drawable.img_favorite_unselected_2x)
             } else if (favorite == 0) {
@@ -117,7 +114,7 @@ class RecyclerviewMainAdapter(private val context: Context,private val item: Arr
                 val intent = Intent(context, StarbucksMenuDetailActivity::class.java)
                 intent.putExtra("starbucksMenuDTO", starbucksMenuDTO)
                 intent.putExtra("productCD", starbucksMenuDTO.product_CD)
-                if (favoriteHashMap[starbucksMenuDTO.product_CD] != null) {
+                if (viewPagerAdapter.getFavorites()[starbucksMenuDTO.product_CD] != null) {
                     intent.putExtra("favoriteIsChecked", true)
                 } else {
                     intent.putExtra("favoriteIsChecked", false)
