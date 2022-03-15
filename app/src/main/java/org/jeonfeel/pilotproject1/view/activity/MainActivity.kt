@@ -46,7 +46,6 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                 mainActivityViewModel.checkFavorite(
                     productCD,
                     favoriteIsChecked,
-                    binding.tlMain.selectedTabPosition
                 )
             }
         }
@@ -74,16 +73,16 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initObserver() {
         mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        mainActivityViewModel.categoryListLiveData.observe(this, Observer {
+            initViewPager()
+        })
+
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
-            if(binding.viewPager2.adapter == null) {
-                initViewPager()
-            }
             viewPagerAdapter.setFavorites(it)
         })
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
             viewPagerAdapter.setItem(it)
-            mainActivityViewModel.updateSetting(binding.tlMain.selectedTabPosition)
         })
     }
 
@@ -94,10 +93,12 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initListener() {
         binding.tlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPagerAdapter.setCurrentPosition(tab!!.position)
+                if(viewPagerAdapter.getSelectedTabPosition() != tab!!.position) {
+                    mainActivityViewModel.tempNutritionalInformation.clear()
+                }
+                viewPagerAdapter.setSelectedTabPosition(tab!!.position)
                 searchRecyclerviewItem()
-                viewPagerAdapter.updateCurrentView(mainActivityViewModel.updateSetting(tab.position))
-                mainActivityViewModel.tempNutritionalInformation.clear()
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -124,6 +125,8 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                 AnimationUtils.loadAnimation(this, R.anim.anim_slide_up)
             binding.flSettingMain.animation = animation
             binding.flSettingMain.visibility = View.VISIBLE
+
+            Log.d(TAG, mainActivityViewModel.tempNutritionalInformation.toString())
 
             val fragment = FragmentSettingMain.newInstance()
             fragment.setSliderValue(
@@ -261,12 +264,9 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     }
 
     override fun updateSettingImmediately(nutritionalInformation: HashMap<String, Int>) {
-        val menu = mainActivityViewModel.updateSettingImmediately(
-            this,
-            nutritionalInformation,
-            binding.tlMain.selectedTabPosition
-        )
-        viewPagerAdapter.updateCurrentView(menu)
+        mainActivityViewModel.tempNutritionalInformation = nutritionalInformation
+        Log.d(TAG, mainActivityViewModel.tempNutritionalInformation.toString())
+        mainActivityViewModel.updateSetting(binding.tlMain.selectedTabPosition)
     }
 
     override fun startForActivityResult(intent: Intent) {

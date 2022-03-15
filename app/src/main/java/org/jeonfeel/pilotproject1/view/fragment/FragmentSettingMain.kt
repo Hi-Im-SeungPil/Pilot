@@ -87,7 +87,7 @@ class FragmentSettingMain : Fragment() {
             val proteinValues = binding?.sliderProtein?.values
             val fatValues = binding?.sliderFat?.values
             val sugarValues = binding?.sliderSugar?.values
-            saveCurrentSetting(proteinValues!!,fatValues!!,sugarValues!!)
+            saveCurrentSetting(proteinValues?: emptyList(),fatValues?: emptyList(),sugarValues?: emptyList())
             customListener.updateSettingImmediately(nutritionalInformation)
             fragmentFinish()
         }
@@ -254,6 +254,7 @@ class FragmentSettingMain : Fragment() {
         fatValues: List<Float>,
         sugarValues: List<Float>
     ) {
+        Log.d(TAG,proteinValues.toString())
         if (proteinValues.size == 2) {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
                 proteinValues[0].toInt()
@@ -281,6 +282,7 @@ class FragmentSettingMain : Fragment() {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] = 0
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] = 0
         }
+        Log.d(TAG,nutritionalInformation.toString())
     }
 
     fun setSliderValue(

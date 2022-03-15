@@ -15,12 +15,15 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
 
-class RecyclerviewMainAdapter(private val context: Context, private val viewPagerAdapter: ViewPagerAdapter) :
+class RecyclerviewMainAdapter(
+    private val context: Context,
+    private val viewPagerAdapter: ViewPagerAdapter
+) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
 
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
-    private var recyclerViewMainItem:ArrayList<StarbucksMenuDTO> = ArrayList()
-    private var filteredList = recyclerViewMainItem
+    private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
+    var filteredList = recyclerViewMainItem
     private var selectedItemPosition: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,15 +50,6 @@ class RecyclerviewMainAdapter(private val context: Context, private val viewPage
     fun setItem(arr: ArrayList<StarbucksMenuDTO>) {
         recyclerViewMainItem.clear()
         recyclerViewMainItem.addAll(arr)
-
-        recyclerViewMainItem get() = arr
-        notifyDataSetChanged()
-    }
-
-    fun updateFavoriteImage() {
-        if (selectedItemPosition != null) {
-            notifyItemChanged(selectedItemPosition!!)
-        }
     }
 
     override fun getFilter(): Filter {
@@ -81,10 +75,8 @@ class RecyclerviewMainAdapter(private val context: Context, private val viewPage
             @SuppressLint("NotifyDataSetChanged")
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
-                if (filterResults?.values != null) {
-                    filteredList = filterResults.values as ArrayList<StarbucksMenuDTO>
-                    notifyDataSetChanged()
-                }
+                filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO> ?: arrayListOf()
+                notifyDataSetChanged()
             }
         }
     }
