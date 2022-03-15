@@ -65,9 +65,9 @@ class ViewPagerAdapter(
         return this.favorites
     }
 
-    fun updateCurrentView(arr: ArrayList<StarbucksMenuDTO>) {
-        allCoffee[currentPosition] = arr
-    }
+//    fun updateCurrentView(arr: ArrayList<StarbucksMenuDTO>) {
+//        allCoffee[currentPosition] = arr
+//    }
 
     inner class ViewHolder(private val binding: Viewpager2ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {

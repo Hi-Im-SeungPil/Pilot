@@ -266,7 +266,6 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
             nutritionalInformation,
             binding.tlMain.selectedTabPosition
         )
-        viewPagerAdapter.updateCurrentView(menu)
     }
 
     override fun startForActivityResult(intent: Intent) {
