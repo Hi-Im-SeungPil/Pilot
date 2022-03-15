@@ -16,4 +16,4 @@ data class StarbucksMenuDTO(
     val protein: String,
     val sodium: String,
     val caffeine: String
-) : Serializable
+) : Serializablegdgd
