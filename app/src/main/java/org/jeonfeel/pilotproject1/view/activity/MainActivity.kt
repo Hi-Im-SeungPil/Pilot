@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.net.UrlQuerySanitizer
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,20 +11,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import org.jeonfeel.pilotproject1.R
-import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
@@ -47,7 +43,10 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                 val productCD: String = intent!!.getStringExtra("productCD").toString()
                 val favoriteIsChecked = intent.getBooleanExtra("favoriteIsChecked", false)
 
-                mainActivityViewModel.checkFavorite(productCD, favoriteIsChecked, binding.tlMain.selectedTabPosition)
+                mainActivityViewModel.checkFavorite(
+                    productCD,
+                    favoriteIsChecked,
+                )
             }
         }
 
@@ -74,12 +73,16 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initObserver() {
         mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        mainActivityViewModel.categoryListLiveData.observe(this, Observer {
+            initViewPager()
+        })
+
         mainActivityViewModel.favoriteLiveData.observe(this, Observer {
-            viewPagerAdapter.setFavorite(it)
+            viewPagerAdapter.setFavorites(it)
         })
 
         mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
-            initViewPager(it)
+            viewPagerAdapter.setItem(it)
         })
     }
 
@@ -90,8 +93,12 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initListener() {
         binding.tlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPagerAdapter.setCurrentPosition(tab!!.position)
+                if(viewPagerAdapter.getSelectedTabPosition() != tab!!.position) {
+                    mainActivityViewModel.tempNutritionalInformation.clear()
+                }
+                viewPagerAdapter.setSelectedTabPosition(tab!!.position)
                 searchRecyclerviewItem()
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -119,11 +126,13 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
             binding.flSettingMain.animation = animation
             binding.flSettingMain.visibility = View.VISIBLE
 
+            Log.d(TAG, mainActivityViewModel.tempNutritionalInformation.toString())
+
             val fragment = FragmentSettingMain.newInstance()
             fragment.setSliderValue(
-                mainActivityViewModel.maxProtein,
-                mainActivityViewModel.maxFat,
-                mainActivityViewModel.maxSugar,
+                mainActivityViewModel.getProteinMaxValue(binding.tlMain.selectedTabPosition),
+                mainActivityViewModel.getFatMaxValue(binding.tlMain.selectedTabPosition),
+                mainActivityViewModel.getSugarsMaxValue(binding.tlMain.selectedTabPosition),
                 mainActivityViewModel.tempNutritionalInformation
             )
             supportFragmentManager
@@ -139,8 +148,8 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
         }
     }
 
-    private fun initViewPager(allCoffeeList: ArrayList<ArrayList<StarbucksMenuDTO>>) {
-        viewPagerAdapter = ViewPagerAdapter(this, allCoffeeList)
+    private fun initViewPager() {
+        viewPagerAdapter = ViewPagerAdapter(this)
         binding.viewPager2.adapter = viewPagerAdapter
         TabLayoutMediator(binding.tlMain, binding.viewPager2) { tab, position ->
             addTabLayoutCategory(position - 1, tab)
@@ -190,7 +199,7 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                         }
                     }
                     intent.extras != null -> {
-                        GlobalScope.launch(Dispatchers.IO) {
+                        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                             mainActivityViewModel.loadData().join()
                             val productCD = intent.extras!!.getString("product_CD") ?: ""
                             val category = intent.extras!!.getString("category") ?: ""
@@ -255,8 +264,9 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     }
 
     override fun updateSettingImmediately(nutritionalInformation: HashMap<String, Int>) {
-        mainActivityViewModel.updateSettingImmediately(this, nutritionalInformation)
         mainActivityViewModel.tempNutritionalInformation = nutritionalInformation
+        Log.d(TAG, mainActivityViewModel.tempNutritionalInformation.toString())
+        mainActivityViewModel.updateSetting(binding.tlMain.selectedTabPosition)
     }
 
     override fun startForActivityResult(intent: Intent) {

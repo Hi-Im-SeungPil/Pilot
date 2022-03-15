@@ -1,5 +1,6 @@
 package org.jeonfeel.pilotproject1.view.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,15 +11,15 @@ import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.databinding.Viewpager2ItemBinding
 
 class ViewPagerAdapter(
-    private val context: Context,
-    private val allCoffee: ArrayList<ArrayList<StarbucksMenuDTO>>
+    private val context: Context
 ) :
     RecyclerView.Adapter<ViewPagerAdapter.ViewHolder>() {
 
     private val TAG = ViewPagerAdapter::class.java.simpleName
-
     private var adapters = ArrayList<RecyclerviewMainAdapter>()
-    private var currentPosition = 0
+    private val allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
+    private var favorites = HashMap<String, Int>()
+    private var selectedTabPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,50 +29,62 @@ class ViewPagerAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewPagerAdapter.ViewHolder, position: Int) {
-        holder.itemInit(position)
+        holder.itemInit()
     }
 
     override fun getItemCount(): Int {
         return allCoffee.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItem(allCoffee: ArrayList<ArrayList<StarbucksMenuDTO>>) {
+        this.allCoffee.clear()
+        this.allCoffee.addAll(allCoffee)
+        notifyDataSetChanged()
+    }
+
     override fun getItemViewType(position: Int): Int {
         return super.getItemViewType(position)
     }
 
-    fun setCurrentPosition(currentPosition: Int) {
-        this.currentPosition = currentPosition
-        Log.e("TAG", this.currentPosition.toString())
+    fun setSelectedTabPosition(selectedTabPosition: Int) {
+        this.selectedTabPosition = selectedTabPosition
+        Log.e("TAG", this.selectedTabPosition.toString())
+    }
+
+    fun getSelectedTabPosition(): Int {
+        return selectedTabPosition
     }
 
     fun search(str: String) {
-        adapters[currentPosition].filter.filter(str)
+        adapters[selectedTabPosition].filter.filter(str)
     }
 
-    fun setFavorite(favorites: HashMap<String, Int>) {
-        if(favorites.size != 0){
-            Log.d(TAG,favorites.values.groupBy { favorites.keys }.toString())
-        }
+    @SuppressLint("NotifyDataSetChanged")
+    fun setFavorites(favoriteHash: HashMap<String, Int>) {
+        favorites = favoriteHash
+        notifyDataSetChanged()
     }
 
-    fun updateFavoriteImage(hash: HashMap<String, Int>) {
-        adapters[currentPosition].updateFavoriteImage(hash)
+    fun getFavorites(): HashMap<String, Int> {
+        return this.favorites
     }
 
     inner class ViewHolder(private val binding: Viewpager2ItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun itemInit(position: Int) {
-            val recyclerviewMainAdapter = RecyclerviewMainAdapter(context, allCoffee[position])
+        fun itemInit() {
+            val recyclerviewMainAdapter = RecyclerviewMainAdapter(context, this@ViewPagerAdapter)
             val gridLayoutManager = GridLayoutManagerWrap(context, 2)
             binding.rvMain.layoutManager = gridLayoutManager
             binding.rvMain.adapter = recyclerviewMainAdapter
-            if (adapters.size == allCoffee.size) {
+            recyclerviewMainAdapter.setItem(allCoffee[adapterPosition] as ArrayList<StarbucksMenuDTO>)
+
+            if (adapters.size == allCoffee.size || adapters.size > adapterPosition) {
                 adapters[adapterPosition] = recyclerviewMainAdapter
             } else {
                 adapters.add(recyclerviewMainAdapter)
             }
-
             Log.e(TAG, "adapters size=> ${adapters.size.toString()}")
             Log.e(TAG, "adapterPosition => ${adapterPosition.toString()}")
         }
