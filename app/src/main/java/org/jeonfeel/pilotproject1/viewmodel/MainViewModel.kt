@@ -155,8 +155,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         for (i in 0 until originalList.size) {
             var tempList = sortList(sortInfo, originalList[i])
             tempList = filterCaffeine(tempList, isCaffeine)
-            if(i == selectedTabPosition){
-                tempList = filterNutritionalInformation(getApplication(),tempList,tempNutritionalInformation)
+            if (i == selectedTabPosition) {
+                tempList = filterNutritionalInformation(
+                    getApplication(),
+                    tempList,
+                    tempNutritionalInformation
+                )
             }
             resultList.add(tempList)
         }

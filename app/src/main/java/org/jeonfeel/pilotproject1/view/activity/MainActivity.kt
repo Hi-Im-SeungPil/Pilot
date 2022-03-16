@@ -14,19 +14,23 @@ import android.view.animation.AnimationUtils
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ActivityMainBinding
 import org.jeonfeel.pilotproject1.view.adapter.RecyclerViewMainListener
 import org.jeonfeel.pilotproject1.view.adapter.ViewPagerAdapter
 import org.jeonfeel.pilotproject1.view.fragment.FragmentSettingMain
 import org.jeonfeel.pilotproject1.viewmodel.MainViewModel
+
 
 class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingListener,
     RecyclerViewMainListener {
@@ -35,6 +39,7 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainActivityViewModel: MainViewModel
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -62,6 +67,7 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
      * 액티비티 초기화
      */
     private fun initActivity() {
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         initObserver()
         initListener()
         backgroundFCM()
@@ -73,17 +79,17 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initObserver() {
         mainActivityViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        mainActivityViewModel.categoryListLiveData.observe(this, Observer {
+        mainActivityViewModel.categoryListLiveData.observe(this) {
             initViewPager()
-        })
+        }
 
-        mainActivityViewModel.favoriteLiveData.observe(this, Observer {
+        mainActivityViewModel.favoriteLiveData.observe(this) {
             viewPagerAdapter.setFavorites(it)
-        })
+        }
 
-        mainActivityViewModel.starbucksMenuLiveData.observe(this, Observer {
+        mainActivityViewModel.starbucksMenuLiveData.observe(this) {
             viewPagerAdapter.setItem(it)
-        })
+        }
     }
 
     /**
@@ -93,10 +99,10 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
     private fun initListener() {
         binding.tlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                if(viewPagerAdapter.getSelectedTabPosition() != tab!!.position) {
+                if (viewPagerAdapter.getSelectedTabPosition() != tab!!.position) {
                     mainActivityViewModel.tempNutritionalInformation.clear()
                 }
-                viewPagerAdapter.setSelectedTabPosition(tab!!.position)
+                viewPagerAdapter.setSelectedTabPosition(tab.position)
                 searchRecyclerviewItem()
 
             }
@@ -139,6 +145,10 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                 .beginTransaction()
                 .replace(binding.flSettingMain.id, fragment)
                 .commit()
+
+            val bundle = Bundle()
+            bundle.putString("event_name", "clickBtnAdjust")
+            firebaseAnalytics.logEvent("click_btn_adjust", bundle)
         }
 
         binding.flSettingMain.setOnTouchListener { _, _ -> true }
@@ -176,7 +186,7 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
         super.onBackPressed()
     }
 
-    // 앱 종료상태일 떄 다이나믹 링크 or FCM동작 처리
+    // 앱 종료상태일 떄 다이나믹 링크 or FCM 동작 처리
     private fun backgroundFCM() {
         Firebase.dynamicLinks
             .getDynamicLink(intent)
@@ -187,30 +197,41 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                 }
                 when {
                     deeplink != null -> {
-                        Log.e(TAG, deeplink.toString())
+                        loading(true)
                         val sanitizer = UrlQuerySanitizer(deeplink.toString())
                         CoroutineScope(Dispatchers.IO).launch {
-                            val job1 = mainActivityViewModel.loadData()
-                            job1.join()
+                            mainActivityViewModel.loadData().join()
                             val productCD = sanitizer.getValue("product_CD") ?: ""
                             val category = sanitizer.getValue("category") ?: ""
                             val newIntent = mainActivityViewModel.backgroundFCM(productCD, category)
                             startForResult.launch(newIntent)
+                            delay(4000)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                loading(false)
+                            }
                         }
                     }
                     intent.extras != null -> {
+                        loading(true)
                         CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
                             mainActivityViewModel.loadData().join()
                             val productCD = intent.extras!!.getString("product_CD") ?: ""
                             val category = intent.extras!!.getString("category") ?: ""
                             val newIntent = mainActivityViewModel.backgroundFCM(productCD, category)
                             startForResult.launch(newIntent)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                loading(false)
+                            }
                         }
                         Log.e(TAG, "getDynamicLink: no link found")
                     }
                     else -> {
+                        loading(true)
                         CoroutineScope(Dispatchers.IO).launch {
-                            mainActivityViewModel.loadData().start()
+                            mainActivityViewModel.loadData().join()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                loading(false)
+                            }
                         }
                     }
                 }
@@ -218,7 +239,7 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
             .addOnFailureListener(this) { e -> Log.w(TAG, "getDynamicLink:onFailure", e) }
     }
 
-    // 앱이 foreGround 상태일 떄 다이나믹 링크 or FCM동작 처리
+    // 앱이 foreGround 상태일 떄 다이나믹 링크 or FCM 동작 처리
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Firebase.dynamicLinks.getDynamicLink(intent).addOnSuccessListener { pendingDynamicLink ->
@@ -253,6 +274,21 @@ class MainActivity : FragmentActivity(), FragmentSettingMain.FragmentSettingList
                     }
                 }
             }
+        }
+    }
+
+    private fun loading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.testShimmer.startShimmer()
+        } else {
+            binding.testShimmer.stopShimmer()
+            binding.testShimmer.visibility = View.GONE
+            binding.etSearchMain.visibility = View.VISIBLE
+            binding.btnAdjustMain.visibility = View.VISIBLE
+            binding.viewPager2.visibility = View.VISIBLE
+            binding.tlMain.visibility = View.VISIBLE
+            binding.btnMessageBoxMain.visibility = View.VISIBLE
+            binding.ivSearchMain.visibility = View.VISIBLE
         }
     }
 

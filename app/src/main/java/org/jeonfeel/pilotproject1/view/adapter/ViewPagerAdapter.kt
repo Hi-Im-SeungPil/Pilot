@@ -17,7 +17,7 @@ class ViewPagerAdapter(
 
     private val TAG = ViewPagerAdapter::class.java.simpleName
     private var adapters = ArrayList<RecyclerviewMainAdapter>()
-    private val allCoffee = ArrayList<ArrayList<StarbucksMenuDTO>>()
+    private val viewPagerItem = ArrayList<ArrayList<StarbucksMenuDTO>>()
     private var favorites = HashMap<String, Int>()
     private var selectedTabPosition = 0
 
@@ -33,14 +33,14 @@ class ViewPagerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return allCoffee.size
+        return viewPagerItem.size
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItem(allCoffee: ArrayList<ArrayList<StarbucksMenuDTO>>) {
-        this.allCoffee.clear()
-        this.allCoffee.addAll(allCoffee)
-        notifyDataSetChanged()
+        this.viewPagerItem.clear()
+        this.viewPagerItem.addAll(allCoffee)
+        notifyItemRangeChanged(0,viewPagerItem.size)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -49,7 +49,6 @@ class ViewPagerAdapter(
 
     fun setSelectedTabPosition(selectedTabPosition: Int) {
         this.selectedTabPosition = selectedTabPosition
-        Log.e("TAG", this.selectedTabPosition.toString())
     }
 
     fun getSelectedTabPosition(): Int {
@@ -63,7 +62,7 @@ class ViewPagerAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun setFavorites(favoriteHash: HashMap<String, Int>) {
         favorites = favoriteHash
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0,viewPagerItem.size)
     }
 
     fun getFavorites(): HashMap<String, Int> {
@@ -78,15 +77,13 @@ class ViewPagerAdapter(
             val gridLayoutManager = GridLayoutManagerWrap(context, 2)
             binding.rvMain.layoutManager = gridLayoutManager
             binding.rvMain.adapter = recyclerviewMainAdapter
-            recyclerviewMainAdapter.setItem(allCoffee[adapterPosition] as ArrayList<StarbucksMenuDTO>)
+            recyclerviewMainAdapter.setItem(viewPagerItem[adapterPosition] as ArrayList<StarbucksMenuDTO>)
 
-            if (adapters.size == allCoffee.size || adapters.size > adapterPosition) {
+            if (adapters.size == viewPagerItem.size || adapters.size > adapterPosition) {
                 adapters[adapterPosition] = recyclerviewMainAdapter
             } else {
                 adapters.add(recyclerviewMainAdapter)
             }
-            Log.e(TAG, "adapters size=> ${adapters.size.toString()}")
-            Log.e(TAG, "adapterPosition => ${adapterPosition.toString()}")
         }
     }
 }

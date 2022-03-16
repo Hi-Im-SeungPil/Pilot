@@ -87,7 +87,11 @@ class FragmentSettingMain : Fragment() {
             val proteinValues = binding?.sliderProtein?.values
             val fatValues = binding?.sliderFat?.values
             val sugarValues = binding?.sliderSugar?.values
-            saveCurrentSetting(proteinValues?: emptyList(),fatValues?: emptyList(),sugarValues?: emptyList())
+            saveCurrentSetting(
+                proteinValues ?: emptyList(),
+                fatValues ?: emptyList(),
+                sugarValues ?: emptyList()
+            )
             customListener.updateSettingImmediately(nutritionalInformation)
             fragmentFinish()
         }
@@ -254,15 +258,17 @@ class FragmentSettingMain : Fragment() {
         fatValues: List<Float>,
         sugarValues: List<Float>
     ) {
-        Log.d(TAG,proteinValues.toString())
+        Log.d(TAG, proteinValues.toString())
         if (proteinValues.size == 2) {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
                 proteinValues[0].toInt()
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
                 proteinValues[1].toInt()
         } else {
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] = 0
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowProtein_key)] =
+                0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highProtein_key)] =
+                0
         }
         if (fatValues.size == 2) {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] =
@@ -270,8 +276,10 @@ class FragmentSettingMain : Fragment() {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
                 fatValues[1].toInt()
         } else {
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] = 0
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowFat_key)] =
+                0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highFat_key)] =
+                0
         }
         if (sugarValues.size == 2) {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] =
@@ -279,10 +287,12 @@ class FragmentSettingMain : Fragment() {
             nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
                 sugarValues[1].toInt()
         } else {
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] = 0
-            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] = 0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_lowSugar_key)] =
+                0
+            nutritionalInformation[requireActivity().getString(R.string.nutritionalInformation_highSugar_key)] =
+                0
         }
-        Log.d(TAG,nutritionalInformation.toString())
+        Log.d(TAG, nutritionalInformation.toString())
     }
 
     fun setSliderValue(

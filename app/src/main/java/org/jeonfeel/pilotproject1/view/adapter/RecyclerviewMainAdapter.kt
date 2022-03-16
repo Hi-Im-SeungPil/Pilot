@@ -3,12 +3,14 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
@@ -24,7 +26,6 @@ class RecyclerviewMainAdapter(
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
     private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
     var filteredList = recyclerViewMainItem
-    private var selectedItemPosition: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -112,7 +113,6 @@ class RecyclerviewMainAdapter(
                     intent.putExtra("favoriteIsChecked", false)
                 }
                 (context as RecyclerViewMainListener).startForActivityResult(intent)
-                selectedItemPosition = adapterPosition
             }
         }
 
