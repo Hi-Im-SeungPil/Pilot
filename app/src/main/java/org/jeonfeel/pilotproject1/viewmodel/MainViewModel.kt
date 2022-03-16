@@ -31,8 +31,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var starbucksMenuJsonObject: JsonObject? = null
     private var categoryList: List<String>? = null
     private var favorites: HashMap<String, Int>? = null
+
     private val starbucksMenuList: ArrayList<ArrayList<StarbucksMenuDTO>> = arrayListOf()
     private val originalList: ArrayList<ArrayList<StarbucksMenuDTO>> = arrayListOf()
+    private val _categoryListLiveData: MutableLiveData<List<String>> =
+        MutableLiveData<List<String>>()
+    val categoryListLiveData: LiveData<List<String>> get() = _categoryListLiveData
 
     private val _starbucksMenuLiveData: MutableLiveData<ArrayList<ArrayList<StarbucksMenuDTO>>> =
         MutableLiveData<ArrayList<ArrayList<StarbucksMenuDTO>>>()
@@ -48,8 +52,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return viewModelScope.launch(start = CoroutineStart.LAZY, context = Dispatchers.IO) {
             getStarbucksMenuJsonObj()
             getCategoryList()
-            getFavorites()
             getAllStarbucksMenu()
+            getFavorites()
         }
     }
 
@@ -60,6 +64,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun getCategoryList() {
         categoryList = starbucksMenuJsonObject?.keySet()?.toList()
+        _categoryListLiveData.postValue(categoryList)
     }
 
     /**
@@ -94,8 +99,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         starbucksMenuList.add(0, allStarbucksMenuDTO)
         originalList.addAll(starbucksMenuList)
-
-        _starbucksMenuLiveData.postValue(starbucksMenuList)
+        updateSetting()
     }
 
     /**
@@ -112,11 +116,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.e(TAG, "favorites => ${favorites.toString()}")
     }
 
-    fun checkFavorite(productCD: String, favoriteIsChecked: Boolean, selectedTabPosition: Int) {
+    fun checkFavorite(productCD: String, favoriteIsChecked: Boolean) {
         val favoriteHashMap = favoriteLiveData.value
 
         if (favoriteIsChecked && favoriteHashMap?.get(productCD) == null) {
-            favoriteHashMap?.set(productCD, selectedTabPosition)
+            favoriteHashMap?.set(productCD, 0)
             _favoriteLiveData.value = favoriteHashMap
             insertFavorite(productCD)
         } else if (!favoriteIsChecked && favoriteHashMap?.get(productCD) != null) {
@@ -124,6 +128,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _favoriteLiveData.value = favoriteHashMap
             deleteFavorite(productCD)
         }
+        Log.e(TAG, "favorites => ${favoriteHashMap.toString()}")
     }
 
     private fun insertFavorite(productCD: String) {
@@ -143,47 +148,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 세팅
      * */
-    fun updateSetting(
-        tabPosition: Int
-    ): ArrayList<StarbucksMenuDTO> {
+    fun updateSetting(selectedTabPosition: Int = 0) {
         val sortInfo = Shared.getSort()
         val isCaffeine = Shared.getDeCaffeine()
-
-        val resultList: ArrayList<StarbucksMenuDTO> = ArrayList()
-        var tempList = sortList(sortInfo, tabPosition)
-        tempList = filterCaffeine(tempList, isCaffeine)
-
-        resultList.addAll(tempList)
-
-        return resultList
-    }
-
-    // Fragment에서 즉시 update
-    fun updateSettingImmediately(
-        context: Context,
-        nutritionalInformation: HashMap<String, Int>,
-        tabPosition: Int
-    ): ArrayList<StarbucksMenuDTO> {
-        val sortInfo = Shared.getSort()
-        val isCaffeine = Shared.getDeCaffeine()
-
-        val resultList: ArrayList<StarbucksMenuDTO> = arrayListOf()
-        var tempList = sortList(sortInfo, tabPosition)
-        tempList = filterCaffeine(tempList, isCaffeine)
-        tempList = filterNutritionalInformation(context, tempList, nutritionalInformation)
-
-        resultList.addAll(tempList)
-
-        return resultList
+        val resultList: ArrayList<ArrayList<StarbucksMenuDTO>> = ArrayList()
+        for (i in 0 until originalList.size) {
+            var tempList = sortList(sortInfo, originalList[i])
+            tempList = filterCaffeine(tempList, isCaffeine)
+            if (i == selectedTabPosition) {
+                tempList = filterNutritionalInformation(
+                    getApplication(),
+                    tempList,
+                    tempNutritionalInformation
+                )
+            }
+            resultList.add(tempList)
+        }
+        _starbucksMenuLiveData.postValue(resultList)
     }
 
     // sorting List
     private fun sortList(
         sortInfo: Int,
-        tabPosition: Int
-    ): List<StarbucksMenuDTO> {
+        originalList: List<StarbucksMenuDTO>
+    ): ArrayList<StarbucksMenuDTO> {
         val resultList = ArrayList<StarbucksMenuDTO>()
-        resultList.addAll(originalList[tabPosition])
+        resultList.addAll(originalList)
 
         when (sortInfo) {
             Shared.SORT_LOW_KCAL -> resultList.sortBy { it.kcal.toInt() }
@@ -195,11 +185,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // caffeine filter
     private fun filterCaffeine(
-        resultList: List<StarbucksMenuDTO>,
-        onCaffeineFilter: Boolean
-    ): List<StarbucksMenuDTO> {
+        resultList: ArrayList<StarbucksMenuDTO>,
+        onCaffeineFilter: Boolean,
+    ): ArrayList<StarbucksMenuDTO> {
         if (onCaffeineFilter) {
-            return resultList.filter { it.caffeine.toInt() == 0 }
+            return resultList.filter { it.caffeine.toInt() == 0 } as ArrayList
         }
         return resultList
     }
@@ -209,7 +199,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         context: Context,
         resultList: List<StarbucksMenuDTO>,
         nutritionalInformation: HashMap<String, Int>
-    ): List<StarbucksMenuDTO> {
+    ): ArrayList<StarbucksMenuDTO> {
         if (nutritionalInformation.size != 0) {
             return resultList.filter {
                 ceil(it.protein.toFloat()).toInt() in nutritionalInformation[context.getString(R.string.nutritionalInformation_lowProtein_key)]!!..nutritionalInformation[context.getString(
@@ -221,9 +211,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         && ceil(it.sugars.toFloat()).toInt() in nutritionalInformation[context.getString(
                     R.string.nutritionalInformation_lowSugar_key
                 )]!!..nutritionalInformation[context.getString(R.string.nutritionalInformation_highSugar_key)]!!
-            }
+            } as ArrayList
         }
-        return resultList
+        return resultList as ArrayList
     }
 
     fun getProteinMaxValue(tabPosition: Int): Float {

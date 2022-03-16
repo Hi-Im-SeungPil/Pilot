@@ -3,25 +3,29 @@ package org.jeonfeel.pilotproject1.view.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.jeonfeel.pilotproject1.R
 import org.jeonfeel.pilotproject1.databinding.ItemRecyclerviewMainBinding
 import org.jeonfeel.pilotproject1.data.remote.model.StarbucksMenuDTO
 import org.jeonfeel.pilotproject1.view.activity.StarbucksMenuDetailActivity
 import kotlin.collections.ArrayList
 
-class RecyclerviewMainAdapter(private val context: Context, private val viewPagerAdapter: ViewPagerAdapter) :
+class RecyclerviewMainAdapter(
+    private val context: Context,
+    private val viewPagerAdapter: ViewPagerAdapter
+) :
     RecyclerView.Adapter<RecyclerviewMainAdapter.ViewHolder>(), Filterable {
 
     private val TAG = RecyclerviewMainAdapter::class.java.simpleName
-    private var recyclerViewMainItem:ArrayList<StarbucksMenuDTO> = ArrayList()
-    private var filteredList = recyclerViewMainItem
-    private var selectedItemPosition: Int? = null
+    private var recyclerViewMainItem: ArrayList<StarbucksMenuDTO> = ArrayList()
+    var filteredList = recyclerViewMainItem
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -47,15 +51,6 @@ class RecyclerviewMainAdapter(private val context: Context, private val viewPage
     fun setItem(arr: ArrayList<StarbucksMenuDTO>) {
         recyclerViewMainItem.clear()
         recyclerViewMainItem.addAll(arr)
-
-        recyclerViewMainItem get() = arr
-        notifyDataSetChanged()
-    }
-
-    fun updateFavoriteImage() {
-        if (selectedItemPosition != null) {
-            notifyItemChanged(selectedItemPosition!!)
-        }
     }
 
     override fun getFilter(): Filter {
@@ -81,10 +76,8 @@ class RecyclerviewMainAdapter(private val context: Context, private val viewPage
             @SuppressLint("NotifyDataSetChanged")
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(str: CharSequence?, filterResults: FilterResults?) {
-                if (filterResults?.values != null) {
-                    filteredList = filterResults.values as ArrayList<StarbucksMenuDTO>
-                    notifyDataSetChanged()
-                }
+                filteredList = filterResults?.values as ArrayList<StarbucksMenuDTO> ?: arrayListOf()
+                notifyDataSetChanged()
             }
         }
     }
@@ -120,7 +113,6 @@ class RecyclerviewMainAdapter(private val context: Context, private val viewPage
                     intent.putExtra("favoriteIsChecked", false)
                 }
                 (context as RecyclerViewMainListener).startForActivityResult(intent)
-                selectedItemPosition = adapterPosition
             }
         }
 
